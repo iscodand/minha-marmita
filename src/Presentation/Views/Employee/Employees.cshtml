@@ -1,70 +1,107 @@
-@model IEnumerable<Application.Dtos.User.GetUserDto>;
+@model Application.Wrappers.PagedResponse<IEnumerable<Application.Dtos.User.GetUserDto>>;
 
 @{
+    var employees = Model.Data;
     ViewData["Title"] = "Funcionários";
     Layout = "_Layout";
 }
 
-@await Component.InvokeAsync("Menu")
+<section>
+    <h1 class="text-3xl font-bold mb-6">Funcionários</h1>
 
-<script src="~/js/employees/filters/searchByEmployee.js"></script>
+    <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
+        <div class="bg-white p-4 shadow rounded-lg">
+            <div class="flex justify-between items-center">
+                <div>
+                    <a asp-controller="Employee" asp-action="RegisterEmployee"
+                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                        + Cadastrar Funcionário
+                    </a>
+                </div>
 
-<section class="container-fluid" style="margin-top: -1.9rem; margin-bottom: -2rem; padding: 4rem;">
-    <div class="custom-card">
-        <div class="page-title text-center">
-            <div class="mb-1">
-                <i class="fa-solid fa-user-group fa-lg"></i>
-            </div>
-            <h3>Funcionários</h3>
-        </div>
-    </div>
-
-    <div class="custom-card">
-        <div class="row mb-4 mt-4">
-            <div class="col-md-4" style="padding-top: 20px">
-                <a class="btn btn-primary-custom btn-lg" asp-controller="Employee" asp-action="RegisterEmployee">
-                    + Novo Funcionário
-                </a>
-            </div>
-
-            <div class="col-md-8 row justify-content-end">
-                <div class="col-md-6">
-                    <label for="search-employee-filter" class="form-label fw-thin">
-                        <i class="fa-solid fa-magnifying-glass fa-sm" style="padding-right: 5px;"></i>
-                        BUSCAR:
-                    </label>
-                    <input id="search-employee-filter" class="form-control" placeholder="Busque pelo nome" />
+                <div>
+                    <label for="table-search" class="sr-only">Search</label>
+                    <div class="relative">
+                        <div
+                            class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                            </svg>
+                        </div>
+                        <input type="text"
+                            class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Buscar por funcionário">
+                    </div>
                 </div>
             </div>
         </div>
 
-        <table class="table styled-table">
-            <caption>Total de funcionários encontrados: <b>@Model.Count()</b></caption>
-            <thead>
-                <tr>
-                    <th>Detalhes</th>
-                    <th>Nome</th>
-                    <th>E-mail</th>
-                    <th>Nome de Usuário</th>
-                </tr>
-            </thead>
-            <tbody id="employees-tableBody">
-                @foreach (var user in Model)
-                {
-                    <tr>
-                        <td style="max-width: 50px;">
-                            <a type="button" asp-controller="Employee" asp-action="DetailEmployee"
-                                asp-route-employeeUsername="@user.Username">
-                                <i class="fa-solid fa-circle-info fa-lg"></i>
-                            </a>
-                        </td>
-                        <td>@user.Name</td>
-                        <td>@user.Email</td>
-                        <td>@user.Username</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <div class="relative overflow-x-auto">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 rounded-s-lg">
+                                Nome
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Email
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Usuário
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Cargos
+                            </th>
+                            <th scope="col" class="px-6 py-3 rounded-e-lg">
+                                Ações
+                            </th>
+                        </tr>
+                    </thead>
 
+                    @if (!employees.Any())
+                    {
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="text-center p-6">
+                                    <p class="text-gray-500 text-lg mt-4">Nenhum funcionário encontrado</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    }
+                    else
+                    {
+                        <tbody>
+                            @foreach (var employee in employees)
+                            {
+                                <tr class="bg-white">
+                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                        @employee.Name
+                                    </th>
+                                    <td class="px-6 py-4">
+                                        @employee.Email
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @employee.Username
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @employee.Roles.ToList()
+                                    </td>
+                                    <td scope="row" class="flex gap-10 px-6 py-4">
+                                        <a asp-controller="Employee" asp-action="UpdateEmployee"
+                                            asp-route-employeeUsername="@employee.Username"
+                                            class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+                                            Detalhes
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
 </section>

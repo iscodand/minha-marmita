@@ -1,114 +1,206 @@
 @model Presentation.ViewModels.Order.CreateOrderViewModel;
 
 @{
+    var order = Model;
+    var dropdown = order.CreateOrderDropdown;
     ViewData["Title"] = "Novo Pedido";
     Layout = "_Layout";
 }
 
-@await Component.InvokeAsync("Menu")
+<section>
+    <div class="mb-8 flex">
+        <a asp-controller="Order" asp-action="Orders"
+           class="flex gap-2 shadow bg-blue-700 hover:bg-blue-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">
 
-<link rel="stylesheet" href="~/css/create/create.css" asp-append-version="true" />
-<script src="~/js/customers/actions/getCustomers.js"></script>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="fill-white mt-1">
+                <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+            </svg>
 
-<section class="container-fluid" style="margin-top: -1.9rem; margin-bottom: -2rem; padding: 4rem;">
-    <section class="create-form container">
+            Voltar
+        </a>
+    </div>
 
-        <div class="custom-card create-page-title">
-            <div class="row">
-                <div class="col-md-6">
-                    <h4>Cadastre um novo Pedido</h4>
-                </div>
-                <div class="col-md-6 text-end">
-                    <h4>
-                        <i class="fa-solid fa-clipboard-list fa-lg"></i>
-                    </h4>
-                </div>
-            </div>
-        </div>
+    <h1 class="text-3xl font-bold mb-6">Cadastrar Pedido</h1>
 
-        <form asp-action="Create" asp-antiforgery="true">
+    <div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white">
+        <form asp-controller="Order" asp-action="Create" class="max-w">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <section class="custom-card">
-
-                <div class="row">
-                    <div class="form-outline mb-4">
-                        <i class="fa-solid fa-file-lines fa-sm"></i>
-                        <label class="form-label fw-bolder">Descrição do Pedido (Opcional)</label>
-                        <textarea class="form-control form-control-lg" asp-for="Description"
-                            placeholder="Adicione uma descrição para o pedido.">
-                        </textarea>
-                        <span class="text-danger fw-bolder sm" asp-validation-for="Description"></span>
-                    </div>
-
-                    <div class="form-outline mb-4 row">
-                        <div class="col-md-10">
-                            <i class="fa-solid fa-user fa-sm"></i>
-                            <label class="form-label fw-bolder">Cliente</label>
-                            @Html.DropDownListFor(model => model.CustomerId, new
-                                     SelectList(Model.CreateOrderDropdown.Customers, "Id",
-                                     "Name")
-                                     , new { @class = "form-control form-control-lg" })
-                        </div>
-                        <div class="col-md-2" style="padding-top: 2.3em">
-                            <a class="btn btn-primary-custom" asp-controller="Customer" asp-action="Create">+ Adicionar
-                                Cliente</a>
-                        </div>
-                    </div>
-
-                    <div class="form-outline mb-4 row">
-                        <div class="col-md-10">
-                            <i class="fa-solid fa-utensils fa-sm"></i>
-                            <label class="form-label fw-bolder">Sabor da Quentinha</label>
-                            @Html.DropDownListFor(model => model.MealId, new
-                                     SelectList(Model.CreateOrderDropdown.Meals, "Id",
-                                     "Description")
-                                     , new { @class = "form-control form-control-lg" })
-                        </div>
-                        <div class="col-md-2" style="padding-top: 2.3em">
-                            <a class="btn btn-primary-custom" asp-controller="Meal" asp-action="Create">+ Adicionar
-                                Sabor</a>
-                        </div>
-                    </div>
-
-                    <div class="form-outline mb-4 col-md-4">
-                        <i class="fa-solid fa-dollar-sign fa-sm"></i>
-                        <label class="form-label fw-bolder">Valor</label>
-                        <div class="input-group">
-                            <span class="input-group-text">R$</span>
-                            <input class="form-control form-control-lg" asp-for="Price" placeholder="0.00">
-                        </div>
-                        <span class="text-danger fw-bolder sm" asp-validation-for="Price"></span>
-                    </div>
-
-                    <div class="form-outline mb-4 col-md-4">
-                        <i class="fa-solid fa-money-bill-wave fa-sm"></i>
-                        <label class="form-label fw-bolder">Forma de Pagamento</label>
-                        @Html.DropDownListFor(model => model.PaymentTypeId, new
-                                 SelectList(Model.CreateOrderDropdown.PaymentTypes, "Id",
-                                 "Description")
-                                 , new { @class = "form-control form-control-lg" })
-                    </div>
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label for="customer-dynamic-select"
+                           class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4">
+                        Selecione um Cliente
+                    </label>
                 </div>
 
-                <partial name="../Shared/Partials/_Messages.cshtml" />
+                <div class="md:w-2/3">
+                    <select asp-for="CustomerId" id="customer-dynamic-select" style="width=100%;"
+                            class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    </select>
+                </div>
+            </div>
 
-                <div class="pt-1">
-                    <button class="btn btn-primary-custom" type="submit" style="margin-right: 20px;">
-                        <i class="fa-solid fa-check fa-lg" style="color: #ffffff; padding-right: 4px;"></i> Salvar
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label for="dynamic-select"
+                           class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4">
+                        Selecione um Sabor
+                    </label>
+                </div>
+
+                <div class="md:w-2/3">
+                    <select asp-for="MealId" id="dynamic-select" style="width=100%;"
+                            class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    </select>
+                </div>
+            </div>
+
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-select">
+                        Selecione uma Forma de Pagamento
+                    </label>
+                </div>
+                <div class="md:w-2/3">
+                    @Html.DropDownListFor(model => model.PaymentTypeId, new
+                             SelectList(dropdown.PaymentTypes, "Id",
+                             "Description")
+                             , new { @class = "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" })
+                </div>
+            </div>
+
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-textfield">
+                        Valor do Pedido
+                    </label>
+                </div>
+                <div class="md:w-2/3">
+                    <div class="flex">
+                        <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-e-0 border-gray-300
+                    rounded-s-md">
+                            R$
+                        </span>
+                        <input asp-for="Price" type="text" placeholder="00,00" id="price" value="" class="rounded-none rounded-e-lg bg-gray-50 border
+                        border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5">
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="description">
+                        Observação (opcional)
+                    </label>
+                </div>
+                <div class="md:w-2/3">
+                    <textarea asp-for="Description" class="rounded bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5" id="description" value="" rows="8"></textarea>
+                    <p class="py-2 text-sm text-gray-600">Adicione uma descrição para o pedido (opcional)</p>
+                </div>
+            </div>
+
+            <div class="md:flex md:items-center">
+                <div class="md:w-1/3"></div>
+                <div class="md:w-2/3">
+                    <button class="shadow bg-green-700 hover:bg-green-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                            type="submit">
+                        Salvar Pedido
                     </button>
                 </div>
-
-            </section>
-
-            <div class="pt-1">
-                <a asp-controller="Order" asp-action="Orders" class="btn btn-warning pt-1">
-                    <i class="fa-solid fa-arrow-left fa-lg" style="color: #ffffff; padding-right: 4px;"></i>
-                    <b>Voltar</b>
-                </a>
             </div>
         </form>
-
-    </section>
+    </div>
 
 </section>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#dynamic-select').select2({
+            language: {
+                inputTooShort: function () {
+                    return "Insira 1 ou mais caracteres...";
+                }
+            },
+            placeholder: 'Digite para buscar...',
+            minimumInputLength: 1,
+            ajax: {
+                url: '/sabores/buscar',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        name: params.term
+                    };
+                },
+                processResults: function (response) {
+                    return {
+                        results: response.data.map(function (item) {
+                            return {
+                                id: item.id,
+                                text: item.id + " - " + item.description
+                            };
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#customer-dynamic-select').select2({
+            language: {
+                inputTooShort: function () {
+                    return "Insira 1 ou mais caracteres...";
+                }
+            },
+            placeholder: 'Digite para buscar...',
+            minimumInputLength: 2,
+            ajax: {
+                url: '/clientes/buscar',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        name: params.term
+                    };
+                },
+                processResults: function (response) {
+                    return {
+                        results: response.data.map(function (item) {
+                            return {
+                                id: item.id,
+                                text: item.id + " - " + item.name
+                            };
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+    });
+</script>
+
+<style>
+    .select2-container--default .select2-selection--single {
+        height: 2.5rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+    }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 2.5rem;
+            color: #374151;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 2.5rem;
+        }
+</style>

@@ -4,6 +4,8 @@ using Application.Wrappers;
 using Domain.Entities;
 using Application.Contracts.Repositories;
 using Application.Contracts.Services;
+using Application.Parameters;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Application.Services
 {
@@ -52,6 +54,20 @@ namespace Application.Services
             };
         }
 
+        public async Task<Response<IEnumerable<GetCustomerDto>>> SearchByCustomerAsync(string name)
+        {
+            ICollection<Customer> customers = await _customerRepository.SearchByCustomerAsync(name);
+
+            IEnumerable<GetCustomerDto> mappedCustomers = GetCustomerDto.Map(customers);
+
+            return new Response<IEnumerable<GetCustomerDto>>()
+            {
+                Data = mappedCustomers,
+                Message = "Clientes recuperados com sucesso.",
+                Succeeded = true
+            };
+        }
+
         public async Task<Response<UpdateCustomerDto>> UpdateCustomerAsync(UpdateCustomerDto updateCustomerDto)
         {
             if (updateCustomerDto == null)
@@ -63,14 +79,14 @@ namespace Application.Services
                 };
             }
 
-            if (await _customerRepository.CustomerExistsByCompanyAsync(updateCustomerDto.Name, updateCustomerDto.UserCompanyId))
-            {
-                return new Response<UpdateCustomerDto>()
-                {
-                    Message = "Um cliente com esse nome já foi cadastrado. Verifique e tente novamente",
-                    Succeeded = false
-                };
-            }
+            //if (await _customerRepository.CustomerExistsByCompanyAsync(updateCustomerDto.Name, updateCustomerDto.UserCompanyId))
+            //{
+            //    return new Response<UpdateCustomerDto>()
+            //    {
+            //        Message = "Um cliente com esse nome já foi cadastrado. Verifique e tente novamente",
+            //        Succeeded = false
+            //    };
+            //}
 
             Customer customer = await _customerRepository.GetByIdAsync(updateCustomerDto.Id);
 
@@ -99,16 +115,7 @@ namespace Application.Services
 
         public async Task<Response<GetCustomerDto>> GetCustomerByIdAsync(int customerId, int userCompanyId)
         {
-            if (userCompanyId <= 0)
-            {
-                return new Response<GetCustomerDto>()
-                {
-                    Message = "Empresa não encontrada. Verifique e tente novamente.",
-                    Succeeded = false
-                };
-            }
-
-            Customer customer = await _customerRepository.GetCustomerByIdAsync(customerId);
+            Customer customer = await _customerRepository.DetailCustomerAsync(customerId);
 
             if (userCompanyId != customer.CompanyId)
             {
@@ -119,44 +126,31 @@ namespace Application.Services
                 };
             }
 
-            GetCustomerDto getCustomerDto = new()
-            {
-                Id = customer.Id,
-                Name = customer.Name,
-                Phone = customer.Phone,
-                IsActive = customer.IsActive,
-                CreatedBy = customer.User.Name
-            };
+            GetCustomerDto mappedCustomer = GetCustomerDto.Map(customer);
 
             return new Response<GetCustomerDto>()
             {
                 Message = "Cliente encontrado com sucesso.",
                 Succeeded = true,
-                Data = getCustomerDto
+                Data = mappedCustomer
             };
         }
 
-
-        public async Task<Response<IEnumerable<GetCustomerDto>>> GetCustomersByCompanyAsync(int userCompanyId)
+        public async Task<PagedResponse<IEnumerable<GetCustomerDto>>> GetCustomersByCompanyAsync(int companyId, RequestParameter parameter)
         {
-            if (userCompanyId <= 0)
-            {
-                return new()
-                {
-                    Message = "Empresa não encontrada. Verifique e tente novamente.",
-                    Succeeded = false
-                };
-            }
+            var customers = await _customerRepository.GetByCompanyPagedAsync(
+                companyId,
+                parameter.PageNumber,
+                parameter.PageSize
+            );
+            IEnumerable<GetCustomerDto> mappedCustomers = GetCustomerDto.Map(customers.customers);
 
-            IEnumerable<Customer> customers = await _customerRepository.GetCustomersByCompanyAsync(userCompanyId);
-            IEnumerable<GetCustomerDto> mappedCustomers = GetCustomerDto.Map(customers);
-
-            return new()
-            {
-                Message = "Clientes encontrados com sucesso.",
-                Succeeded = true,
-                Data = mappedCustomers
-            };
+            return new(
+                data: mappedCustomers,
+                pageNumber: parameter.PageNumber,
+                pageSize: parameter.PageSize,
+                totalItems: customers.count
+            );
         }
 
         public async Task<Response<IEnumerable<GetCustomerDto>>> GetCustomersByDateRangeAsync(int userCompanyId, DateTime initialDate, DateTime finalDate)

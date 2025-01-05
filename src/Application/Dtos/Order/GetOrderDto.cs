@@ -22,12 +22,12 @@ namespace Application.Dtos.Order
                 Price = x.Price,
                 IsPaid = x.IsPaid,
                 PaidAt = x.PaidAt,
-                PaymentType = x.PaymentType.Description,
-                Meal = x.Meal.Description,
-                Customer = x.Customer.Name,
+                PaymentType = (x.PaymentType is not null) ? x.PaymentType.Description : "",
+                Meal = (x.Meal is not null) ? x.Meal.Description : "Não Identificado",
+                Customer = (x.Customer is not null) ? x.Customer.Name : "Não Identificado" ,
                 CreatedBy = "",
                 CreatedAt = x.CreatedAt,
-            });
+            });;
         }
     }
 }

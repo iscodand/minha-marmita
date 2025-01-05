@@ -5,85 +5,123 @@
     Layout = "_Layout";
 }
 
-<link rel="stylesheet" href="~/css/create/create.css" asp-append-version="true" />
+<section>
+    <div class="mb-8 flex">
+        <a asp-controller="Meal" asp-action="Meals"
+            class="flex gap-2 shadow bg-blue-700 hover:bg-blue-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">
 
-@await Component.InvokeAsync("Menu")
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="fill-white mt-1">
+                <path
+                    d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+            </svg>
 
-<section class="container">
+            Voltar
+        </a>
+    </div>
 
-    <section class="create-form container">
+    <h1 class="text-3xl font-bold mb-6">Cadastrar Funcionário</h1>
 
-        <div class="custom-card create-page-title">
-            <h4>Adicione um novo Funcionário</h4>
-        </div>
+    <div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white">
 
         <form asp-action="RegisterEmployee" asp-antiforgery="true">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <section class="custom-card">
-
-                <div class="form-outline mb-4">
-                    <i class="fa-solid fa-file-pen"></i>
-                    <label class="form-label fw-bolder">Nome Completo</label>
-                    <input class="form-control form-control-lg" asp-for="Name" />
-                    <span class="text-danger fw-bolder sm" asp-validation-for="Name"></span>
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-textfield">
+                        Nome do Funcionário
+                    </label>
                 </div>
-
-                <div class="form-outline mb-4">
-                    <i class="fa-solid fa-envelope"></i>
-                    <label class="form-label fw-bolder">E-mail</label>
-                    <input class="form-control form-control-lg" asp-for="Email" />
-                    <span class="text-danger fw-bolder sm" asp-validation-for="Email"></span>
+                <div class="md:w-2/3">
+                    <div class="flex">
+                        <input asp-for="Name" type="text" placeholder="Insira o nome do funcionário"
+                            class="rounded bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5">
+                    </div>
                 </div>
+            </div>
 
-                <div class="form-outline mb-4 col-md-6">
-                    <i class="fa-solid fa-user"></i>
-                    <label class="form-label fw-bolder">Usuário</label>
-                    <input class="form-control form-control-lg" asp-for="Username" />
-                    <span class="text-danger fw-bolder sm" asp-validation-for="Username"></span>
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-textfield">
+                        E-mail do Funcionário
+                    </label>
                 </div>
+                <div class="md:w-2/3">
+                    <div class="flex">
+                        <input asp-for="Email" type="email" placeholder="Insira o e-mail do funcionário."
+                            class="rounded bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5">
+                    </div>
+                </div>
+            </div>
 
-                <div class="form-outline mb-4 col-md-6">
-                    <i class="fa-solid fa-id-badge"></i>
-                    <label class="form-label fw-bolder">Cargo do Funcionário</label>
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-textfield">
+                        Nome de Usuário
+                    </label>
+                </div>
+                <div class="md:w-2/3">
+                    <div class="flex">
+                        <input asp-for="Username" type="text" placeholder="Insira o nome de usuário"
+                            class="rounded bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5">
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-select">
+                        Cargo do Funcionário
+                    </label>
+                </div>
+                <div class="md:w-2/3">
                     @Html.DropDownListFor(model => model.RoleId, new
-                             SelectList(Model.RolesDropdown, "Name",
-                             "Description")
-                             , new { @class = "form-control form-control-lg" })
+                         SelectList(Model.RolesDropdown, "Name",
+                         "Description")
+                    , new { @class = "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" })
+                    @* <p class="py-2 text-sm text-gray-600">add notes about populating the field</p> *@
                 </div>
+            </div>
 
-                <div class="row">
-                    <div class="form-outline mb-4 col-md-6">
-                        <i class="fa-solid fa-lock"></i>
-                        <label class="form-label fw-bolder">Senha</label>
-                        <input class="form-control form-control-lg" asp-for="Password" />
-                        <span class="text-danger fw-bolder sm" asp-validation-for="Password"></span>
-                    </div>
-
-                    <div class="form-outline mb-4 col-md-6">
-                        <i class="fa-solid fa-lock"></i>
-                        <label class="form-label fw-bolder">Confirmar Senha</label>
-                        <input class="form-control form-control-lg" asp-for="ConfirmPassword" />
-                        <span class="text-danger fw-bolder sm" asp-validation-for="ConfirmPassword"></span>
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-textfield">
+                        Senha
+                    </label>
+                </div>
+                <div class="md:w-2/3">
+                    <div class="flex">
+                        <input asp-for="Password" type="password" placeholder="Insira a senha"
+                            class="rounded bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5">
                     </div>
                 </div>
+            </div>
 
-                <partial name="../Shared/Partials/_Messages.cshtml" />
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-textfield">
+                        Confirmar Senha
+                    </label>
+                </div>
+                <div class="md:w-2/3">
+                    <div class="flex">
+                        <input asp-for="ConfirmPassword" type="password" placeholder="Confirme sua senha"
+                            class="rounded bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5">
+                    </div>
+                </div>
+            </div>
 
-                <div class="pt-1">
-                    <button class="btn btn-primary-custom" type="submit" style="margin-right: 20px;">
-                        <i class="fa-solid fa-check fa-lg" style="color: #ffffff; padding-right: 4px;"></i> Salvar
+            <div class="md:flex md:items-center">
+                <div class="md:w-1/3"></div>
+                <div class="md:w-2/3">
+                    <button
+                        class="shadow bg-green-700 hover:bg-green-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                        type="submit">
+                        Salvar Funcionário
                     </button>
                 </div>
-
-            </section>
-
-            <div class="pt-1">
-                <a asp-controller="Employee" asp-action="Employees" class="btn btn-warning pt-1">
-                    <i class="fa-solid fa-arrow-left fa-lg" style="color: #ffffff; padding-right: 4px;"></i>
-                    <b>Voltar</b>
-                </a>
             </div>
+
+            <partial name="../Shared/Partials/_Messages.cshtml" />
         </form>
-    </section>
 </section>

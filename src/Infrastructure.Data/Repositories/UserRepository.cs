@@ -39,6 +39,22 @@ namespace Infrastructure.Data.Repositories
                                .ConfigureAwait(false);
         }
 
+        public async Task<(IEnumerable<User> users, int count)> GetUsersByCompanyPagedAsync(int companyId, int pageNumber, int pageSize)
+        {
+            IEnumerable<User> users = await _users.AsNoTracking()
+                            .Where(x => x.CompanyId == companyId)
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync()
+                            .ConfigureAwait(false);
+
+            int totalItems = await _users.AsNoTracking()
+                                .Where(x => x.CompanyId == companyId)
+                                .CountAsync();
+
+            return (users, totalItems);
+        }
+
         public async Task<User> GetWithOrdersAsync(string username)
         {
             return await _users.AsNoTracking()

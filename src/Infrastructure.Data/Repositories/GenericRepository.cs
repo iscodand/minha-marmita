@@ -23,6 +23,22 @@ namespace Infrastructure.Data.Repositories
             return await _context.Set<T>().FindAsync(id);
         }
 
+        public async Task<int> CountAsync()
+        {
+            return await _context.Set<T>().CountAsync();
+        }
+
+        public async Task<IReadOnlyList<T>> GetPagedResponseAsync(int pageNumber, int pageSize)
+        {
+            return await _context
+                        .Set<T>()
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
+                        .AsNoTracking()
+                        .ToListAsync()
+                        .ConfigureAwait(false);
+        }
+
         public async Task<T> CreateAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity);

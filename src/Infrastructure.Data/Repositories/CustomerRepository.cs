@@ -29,21 +29,10 @@ namespace Infrastructure.Data.Repositories
                                    .Include(x => x.Company).AsNoTracking()
                                    .Include(x => x.Orders)
                                    .ThenInclude(x => x.Meal).AsNoTracking()
-                                   .Include(x => x.Orders)
+                                   .Include(x => x.Orders.Skip((1 - 1) * 10).Take(10))
                                    .ThenInclude(x => x.PaymentType).AsNoTracking()
                                    .Where(x => x.Id == customerId).AsNoTracking()
                                    .FirstOrDefaultAsync()
-                                   .ConfigureAwait(false);
-        }
-
-        public async Task<ICollection<Customer>> GetCustomersByCompanyAsync(int companyId)
-        {
-            return await _customers.AsNoTracking()
-                                   .Include(x => x.User).AsNoTracking()
-                                   .Include(x => x.Company).AsNoTracking()
-                                   .Include(x => x.Orders).AsNoTracking()
-                                   .Where(x => x.CompanyId == companyId).AsNoTracking()
-                                   .ToListAsync()
                                    .ConfigureAwait(false);
         }
 
@@ -81,6 +70,36 @@ namespace Infrastructure.Data.Repositories
             return await _customers.AsNoTracking()
                                    .Include(x => x.Orders.Where(x => x.CreatedAt.Date >= initialDate.Date && x.CreatedAt.Date <= finalDate.Date))
                                    .Where(x => x.CompanyId == companyId)
+                                   .ToListAsync()
+                                   .ConfigureAwait(false);
+        }
+
+        public async Task<(ICollection<Customer> customers, int count)> GetByCompanyPagedAsync(int companyId, int pageNumber, int pageSize)
+        {
+            var customers = await _customers.AsNoTracking()
+                                .Include(x => x.User)
+                                .Include(x => x.Company)
+                                .Include(x => x.Orders)
+                                .Where(x => x.CompanyId == companyId)
+                                .Skip((pageNumber - 1) * pageSize)
+                                .Take(pageSize)
+                                .ToListAsync()
+                                .ConfigureAwait(false);
+
+            int totalCustomers = await _customers.AsNoTracking()
+                                                .Where(x => x.CompanyId == companyId)
+                                                .CountAsync()
+                                                .ConfigureAwait(false);
+
+            return (customers, totalCustomers);
+        }
+
+        public async Task<ICollection<Customer>> SearchByCustomerAsync(string name)
+        {
+            return await _customers.AsNoTracking()
+                                   .Include(x => x.User)
+                                   .Include(x => x.Orders)
+                                   .Where(x => x.Name.ToUpper().Trim().Contains(name.ToUpper().Trim()))
                                    .ToListAsync()
                                    .ConfigureAwait(false);
         }

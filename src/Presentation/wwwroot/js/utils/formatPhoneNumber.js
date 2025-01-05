@@ -1,23 +1,6 @@
-function formatPhoneNumber(inputElementId) {
-    const phoneInput = document.getElementById(inputElementId);
-
-    if (!phoneInput) {
-        console.error(`Element with ID ${inputElementId} not found.`);
-        return;
-    }
-
-    phoneInput.addEventListener('input', function () {
-        let phoneNumber = phoneInput.value;
-        phoneNumber = phoneNumber.replace(/\D/g, '');
-
-        if (phoneNumber.length >= 11) {
-            phoneNumber = `(${phoneNumber.substring(0, 2)}) ${phoneNumber.substring(2, 3)} ${phoneNumber.substring(3, 7)}-${phoneNumber.substring(7)}`;
-        } else if (phoneNumber.length >= 3) {
-            phoneNumber = `(${phoneNumber.substring(0, 2)}) ${phoneNumber.substring(2, 3)} ${phoneNumber.substring(3)}`;
-        }
-
-        phoneInput.value = phoneNumber;
-    });
+function formatPhone(input) {
+    var value = input.value.replace(/\D/g, ''); // Remove tudo que não for dígito
+    value = value.replace(/^(\d{2})(\d)/g, '($1) $2'); // Coloca o DDD entre parênteses
+    value = value.replace(/(\d{5})(\d{4})$/, '$1-$2'); // Adiciona o traço após os 5 dígitos
+    input.value = value;
 }
-
-formatPhoneNumber('customerPhoneInput');

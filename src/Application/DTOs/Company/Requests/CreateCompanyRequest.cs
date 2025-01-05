@@ -4,10 +4,11 @@ namespace Application.DTOs.Company.Requests
 {
     public class CreateCompanyRequest
     {
-        [Required(ErrorMessage = "Nome da empresa é obrigatório.")]
+        [Required(ErrorMessage = "Nome da empresa Ã© obrigatÃ³rio.")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "CNPJ da empresa é obrigatório.")]
+        [Required(ErrorMessage = "CNPJ da empresa Ã© obrigatÃ³rio.")]
+        [StringLength(18, ErrorMessage = "VocÃª precisa inserir 18 caracteres.")]
         public string CNPJ { get; set; }
 
         public static Domain.Entities.Company Map(Domain.Entities.Company company, CreateCompanyRequest request)

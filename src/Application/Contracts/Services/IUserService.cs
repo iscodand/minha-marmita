@@ -1,4 +1,5 @@
 using Application.Dtos.User;
+using Application.Parameters;
 using Application.Wrappers;
 
 namespace Application.Contracts.Services
@@ -6,6 +7,7 @@ namespace Application.Contracts.Services
     public interface IUserService
     {
         public Task<Response<IEnumerable<GetUserDto>>> GetUsersByCompanyAsync(int companyId);
+        public Task<PagedResponse<IEnumerable<GetUserDto>>> GetUsersByCompanyPagedAsync(int companyId, RequestParameter parameter);
         public Task<Response<GetUserDto>> GetUserByUsernameAsync(string username);
         public Task<Response<DetailUserDto>> DetailUserAsync(string username, int companyId);
         public Task<Response<IEnumerable<GetRolesDto>>> GetRolesAsync();

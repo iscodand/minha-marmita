@@ -1,87 +1,130 @@
 @model Presentation.ViewModels.Menu.GetUserDataViewModel;
 
-<link rel="stylesheet" href="~/css/navbar/navbar.css" asp-append-version="true" />
-
-<!--Main Navigation-->
-<header>
-    <!-- Sidebar -->
-    <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white">
-        <div class="position-sticky">
-            <div class="mx-3 mt-4">
-                <a asp-controller="Home" asp-action="Home" class="list-group-item list-group-item-action py-2 ripple">
-                    <i class="fa-solid fa-house fa-fw me-3"></i><span>Home</span>
-                </a>
-                <a asp-controller="Order" asp-action="Orders" class="list-group-item list-group-item-action"><i
-                        class="fas fa-chart-bar fa-fw me-3"></i><span>Pedidos</span></a>
-                <a asp-controller="Customer" asp-action="Customers"
-                    class="list-group-item list-group-item-action py-2 ripple"><i
-                        class="fas fa-users fa-fw me-3"></i><span>Clientes</span></a>
-                <a asp-controller="Meal" asp-action="Meals"
-                    class="list-group-item list-group-item-action py-2 ripple"><i
-                        class="fas fa-utensils fa-fw me-3"></i><span>Sabores</span></a>
-
-                @if (User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("SuperAdmin"))
-                {
-                    <a asp-controller="Employee" asp-action="Employees"
-                        class="list-group-item list-group-item-action py-2 ripple">
-                        <i class="fas fa-user-group fa-fw me-3"></i>
-                        <span>Meus Funcionários</span></a>
-                    <a asp-controller="Company" asp-action="GetCompanies"
-                        class="list-group-item list-group-item-action py-2 ripple">
-                        <i class="fas fa-building fa-fw me-3"></i>
-                        <span>Minha Empresa</span>
-                    </a>
-                }
-            </div>
+<!-- Navbar -->
+<nav class="bg-blue-600 p-4 flex justify-between items-center fixed w-full z-10">
+    <div class="flex items-center">
+        <button onclick="toggleSidebar()" class="text-white lg:hidden focus:outline-none mr-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                 xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+            </svg>
+        </button>
+        <div class="text-white font-bold text-xl">
+            Minha Marmita
         </div>
-    </nav>
-    <!-- Sidebar -->
-
-    <!-- Navbar -->
-    <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
-        <!-- Container wrapper -->
-        <div class="container-fluid" style="background-color: #ffffff;">
-            <!-- Toggle button -->
-            <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#sidebarMenu"
-                aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-                <i class="fas fa-bars"></i>
-            </button>
-
-            <!-- Brand -->
-            <a class="navbar-brand" asp-action="Home" asp-controller="Home">
-                SORAYA MANAGEMENT
-            </a>
-
-            <!-- Right links -->
-            <ul class="navbar-nav ms-auto d-flex flex-row">
-                <!-- Avatar -->
-                <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center nav-user">
-                        <i class="fa-solid fa-user"></i>
-                        <b>@Model.Name</b>
+    </div>
+    <!-- User Dropdown -->
+    <div class="relative">
+        <button onclick="toggleDropdown()" class="text-white flex items-center focus:outline-none">
+            <span class="mr-2">@Model.Name</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                 xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </button>
+        <!-- Dropdown menu -->
+        <div id="dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+            <ul class="py-1 text-gray-700">
+                <li>
+                    <a asp-controller="Home" asp-action="MyProfile" class="block px-4 py-2 hover:bg-gray-100">
+                        Meu Perfil
                     </a>
-                    @* <spa n>@Model.CompanyName</span> *@
                 </li>
-
-                <li class="nav-item">
+                <li>
                     <form asp-controller="Authentication" asp-action="Logout">
-                        <button class="btn btn-danger btn-sm logout" type="submit">
-                            Sair
-                            <i class="fa-solid fa-right-from-bracket fa-sm"
-                                style="color: #ffffff; padding-left: 3px"></i>
+                        <button type="submit" class="px-4 py-2 hover:bg-gray-100">
+                            Logout
+                            <i class="fa-solid fa-right-from-bracket text-gray-600 ml-3"></i>
                         </button>
                     </form>
                 </li>
             </ul>
         </div>
-        <!-- Container wrapper -->
-    </nav>
-    <!-- Navbar -->
-</header>
-<!--Main Navigation-->
+    </div>
+</nav>
 
-<!--Main layout-->
-<main style="margin-top: 58px;">
-    <div class="container pt-4"></div>
-</main>
-<!--Main layout-->
+<div class="flex mt-14">
+    <!-- Sidebar -->
+    <aside id="sidebar"
+           class="fixed lg:static w-64 h-screen bg-gray-800 text-white transition-transform transform lg:translate-x-0 -translate-x-full">
+        <ul class="space-y-2 p-4">
+            <li>
+                <a asp-controller="Home" asp-action="Home" class="flex gap-3 block p-2 hover:bg-gray-700 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="fill-white mt-1">
+                        <path d="M575.8 255.5c0 18-15 32.1-32 32.1l-32 0 .7 160.2c0 2.7-.2 5.4-.5 8.1l0 16.2c0 22.1-17.9 40-40 40l-16 0c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1L416 512l-24 0c-22.1 0-40-17.9-40-40l0-24 0-64c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32 14.3-32 32l0 64 0 24c0 22.1-17.9 40-40 40l-24 0-31.9 0c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2l-16 0c-22.1 0-40-17.9-40-40l0-112c0-.9 0-1.9 .1-2.8l0-69.7-32 0c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z" />
+                    </svg>
+                    Home
+                </a>
+            </li>
+            <li>
+                <a asp-controller="Order" asp-action="Orders" class="flex gap-3 block p-2 hover:bg-gray-700 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" class="fill-white mt-1">
+                        <path d="M192 0c-41.8 0-77.4 26.7-90.5 64L64 64C28.7 64 0 92.7 0 128L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64l-37.5 0C269.4 26.7 233.8 0 192 0zm0 64a32 32 0 1 1 0 64 32 32 0 1 1 0-64zM112 192l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16z" />
+                    </svg>
+                    Pedidos
+                </a>
+            </li>
+            <li>
+                <a asp-controller="Meal" asp-action="Meals" class="flex gap-3 block p-2 hover:bg-gray-700 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="fill-white mt-1">
+                        <path d="M0 192c0-35.3 28.7-64 64-64c.5 0 1.1 0 1.6 0C73 91.5 105.3 64 144 64c15 0 29 4.1 40.9 11.2C198.2 49.6 225.1 32 256 32s57.8 17.6 71.1 43.2C339 68.1 353 64 368 64c38.7 0 71 27.5 78.4 64c.5 0 1.1 0 1.6 0c35.3 0 64 28.7 64 64c0 11.7-3.1 22.6-8.6 32L8.6 224C3.1 214.6 0 203.7 0 192zm0 91.4C0 268.3 12.3 256 27.4 256l457.1 0c15.1 0 27.4 12.3 27.4 27.4c0 70.5-44.4 130.7-106.7 154.1L403.5 452c-2 16-15.6 28-31.8 28l-231.5 0c-16.1 0-29.8-12-31.8-28l-1.8-14.4C44.4 414.1 0 353.9 0 283.4z" />
+                    </svg>
+                    Sabores
+                </a>
+            </li>
+            <li>
+                <a asp-controller="Customer" asp-action="Customers"
+                   class="flex gap-3 block p-2 hover:bg-gray-700 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="fill-white mt-1">
+                        <path d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192l42.7 0c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0L21.3 320C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7l42.7 0C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3l-213.3 0zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352l117.3 0C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7l-330.7 0c-14.7 0-26.7-11.9-26.7-26.7z" />
+                    </svg>
+                    Clientes
+                </a>
+            </li>
+
+            @if (User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("SuperAdmin"))
+            {
+                <li>
+                    <a asp-controller="Employee" asp-action="Employees"
+                       class="flex gap-3 block p-2 hover:bg-gray-700 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="fill-white mt-1">
+                            <path d="M48 0C21.5 0 0 21.5 0 48L0 464c0 26.5 21.5 48 48 48l96 0 0-80c0-26.5 21.5-48 48-48s48 21.5 48 48l0 80 89.9 0c-6.3-10.2-9.9-22.2-9.9-35.1c0-46.9 25.8-87.8 64-109.2l0-95.9L384 48c0-26.5-21.5-48-48-48L48 0zM64 240c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32zm112-16l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16zm80 16c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32zM80 96l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16zm80 16c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32zM272 96l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16zM576 272a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM352 477.1c0 19.3 15.6 34.9 34.9 34.9l218.2 0c19.3 0 34.9-15.6 34.9-34.9c0-51.4-41.7-93.1-93.1-93.1l-101.8 0c-51.4 0-93.1 41.7-93.1 93.1z" />
+                        </svg>
+                        Funcionários
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Company" asp-action="MyCompany" class="block p-2 hover:bg-gray-700 rounded">
+                        Minha
+                        Empresa (Não Implementado)
+                    </a>
+                </li>
+            }
+
+            @if (User.IsInRole("SuperAdmin"))
+            {
+                <li>
+                    <a asp-controller="Company" asp-action="GetCompanies"
+                       class="flex gap-3 block p-2 hover:bg-gray-700 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="fill-white mt-1">
+                            <path d="M480 48c0-26.5-21.5-48-48-48L336 0c-26.5 0-48 21.5-48 48l0 48-64 0 0-72c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 72-64 0 0-72c0-13.3-10.7-24-24-24S64 10.7 64 24l0 72L48 96C21.5 96 0 117.5 0 144l0 96L0 464c0 26.5 21.5 48 48 48l256 0 32 0 96 0 160 0c26.5 0 48-21.5 48-48l0-224c0-26.5-21.5-48-48-48l-112 0 0-144zm96 320l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16zM240 416l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16zM128 400c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16l0 32zM560 256c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16l32 0zM256 176l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16zM112 160c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16l32 0zM256 304c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16l0 32zM112 320l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16zm304-48l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16zM400 64c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16l32 0zm16 112l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16z" />
+                        </svg>
+                        Empresas
+                    </a>
+                </li>
+            }
+        </ul>
+    </aside>
+</div>
+
+<script>
+    // Toggle dropdown function
+    function toggleDropdown() {
+        document.getElementById('dropdown').classList.toggle('hidden');
+    }
+
+    // Toggle sidebar function
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('hidden');
+    }
+</script>

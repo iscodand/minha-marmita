@@ -21,5 +21,13 @@ namespace Infrastructure.Data.Repositories
                                 .AnyAsync()
                                 .ConfigureAwait(false);
         }
+
+        public async Task<Company> DetailByIdAsync(int id)
+        {
+            return await _companies.AsNoTracking()
+                                .Where(x => x.Id == id)
+                                .Include(x => x.Users)
+                                .FirstOrDefaultAsync();
+        }
     }
 }

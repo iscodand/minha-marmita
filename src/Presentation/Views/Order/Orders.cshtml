@@ -1,198 +1,302 @@
-@model List<Presentation.ViewModels.Order.GetOrderViewModel>;
+@model Application.Wrappers.PagedResponse<IEnumerable<Application.Dtos.Order.GetOrderDto>>;
 
 @{
+    var orders = Model.Data;
     ViewData["Title"] = "Pedidos";
     Layout = "_Layout";
+
+    int totalOrders = orders.Count();
+
+    decimal total = orders.Select(x => x.Price).Sum();
+    decimal totalPaid = orders.Where(x => x.IsPaid).Select(x => x.Price).Sum();
+    decimal totalToPay = orders.Where(x => !x.IsPaid).Select(x => x.Price).Sum();
 }
 
-@await Component.InvokeAsync("Menu")
+@functions {
+    public string formatPrice(decimal value)
+    {
+        return $"{value.ToString("0.00")}";
+    }
+}
 
-<link rel="stylesheet" href="~/css/elements/box-orders.css" asp-append-version="true" />
-<script type="module" src="~/js/orders/ordersFiltersImport.js"></script>
-<script src="~/js/orders/actions/detailOrderAction.js"></script>
-<script src="~/js/orders/actions/markOrderAsPaidAction.js"></script>
-<script src="~/js/orders/actions/deleteOrderAction.js"></script>
-<script src="~/js/utils/pagination.js"></script>
+<section>
 
-<section class="container-fluid" style="margin-top: -1.9rem; margin-bottom: -2rem; padding: 4rem;">
+    <h1 class="text-3xl font-bold mb-6">Pedidos</h1>
 
-    <div class="custom-card page-title text-center">
-        <div class="mb-1">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div class="bg-white p-6 shadow rounded-lg">
+            <div class="flex justify-between">
+                <div>
+                    <div class="text-gray-700 text-sm">Novos Pedidos</div>
+                    <div class="text-3xl font-bold mt-2">@totalOrders</div>
+                </div>
 
+                <div class="bg-blue-500 text-white rounded-full p-3 w-12 h-12 flex items-center justify-center mt-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                </div>
+            </div>
         </div>
-        <h3>Pedidos</h3>
-        <span id="current-date"></span>
+
+        <div class="bg-white p-6 shadow rounded-lg">
+            <div class="flex justify-between">
+                <div>
+                    <div class="text-gray-700 text-sm">Total Vendido</div>
+                    <div class="text-3xl font-bold mt-2">R$ @formatPrice(total)</div>
+                </div>
+
+                <div class="bg-blue-500 text-white rounded-full p-3 w-12 h-12 flex items-center justify-center mt-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 shadow rounded-lg">
+            <div class="flex justify-between">
+                <div>
+                    <div class="text-gray-700 text-sm">Total Pago</div>
+                    <div class="text-3xl font-bold mt-2">R$ @formatPrice(totalPaid)</div>
+                </div>
+
+                <div class="bg-blue-500 text-white rounded-full p-3 w-12 h-12 flex items-center justify-center mt-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 shadow rounded-lg">
+            <div class="flex justify-between">
+                <div>
+                    <div class="text-gray-700 text-sm">Total a Receber</div>
+                    <div class="text-3xl font-bold mt-2">R$ @formatPrice(totalToPay)</div>
+                </div>
+
+                <div class="bg-blue-500 text-white rounded-full p-3 w-12 h-12 flex items-center justify-center mt-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
+                    </svg>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="box-orders-section row justify-content-center">
-        <div class="col-md-2">
-            <div class="box-orders">
-                <i class="fa-solid fa-chevron-up fa-lg"></i>
-                <h2 id="new-orders-count">@Model.Count</h2>
-                <p>Novos Pedidos</p>
-            </div>
-        </div>
+    <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
+        <div class="bg-white p-4 shadow rounded-lg">
+            <div class="flex justify-between items-center">
+                <div>
+                    <a asp-controller="Order" asp-action="Create"
+                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                        + Novo Pedido
+                    </a>
+                </div>
 
-        <div class="col-md-2">
-            <div class="box-orders">
-                <i class="fa-solid fa-chart-line fa-lg"></i>
-                <h2 id="price-orders-sum">
-                    R$ @Math.Round(Model.Where(x => x.IsPaid == true).Sum(x => x.Price), 2)
-                </h2>
-                <p>Total de Lucro</p>
-            </div>
-        </div>
+                <form>
+                    <div class="flex gap-3">
+                        <div class="relative max-w-sm">
+                            <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
+                                </svg>
+                            </div>
+                            <input datepicker id="default-datepicker" datepicker datepicker-format="dd/mm/yyyy"
+                                type="text"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+                                placeholder="Selecione uma data">
+                        </div>
 
-        <div class="col-md-2">
-            <div class="box-orders">
-                <i class="fa-solid fa-money-bill-transfer fa-lg"></i>
-                <h2 id="total-to-receive">
-                    R$ @Math.Round(Model.Where(x => x.IsPaid == false).Sum(x => x.Price), 2)
-                </h2>
-                <p>Total a Receber</p>
-            </div>
-        </div>
+                        <label for="table-search" class="sr-only">Buscar</label>
+                        <div class="relative">
+                            <div
+                                class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    fill="none" viewBox="0 0 20 20">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                </svg>
+                            </div>
+                            <input type="text" id="table-search-users"
+                                class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Buscar por pedido">
+                        </div>
+                        <div>
+                            <button>
 
-        <div class="col-md-2">
-            <div id="box-orders-paid" class="box-orders paid">
-                <i class="fa-solid fa-check fa-lg"></i>
-                <h2 id="paid-orders-count">@Model.Where(x => x.IsPaid == true).Count()</h2>
-                <p>Pedidos Pagos</p>
-            </div>
-        </div>
-
-        <div class="col-md-2">
-            <div id="box-orders-unpaid" class="box-orders unpaid">
-                <i class="fa-solid fa-x fa-lg"></i>
-                <h2 id="unpaid-orders-count">@Model.Where(x => x.IsPaid == false).Count()</h2>
-                <p>Pedidos NÃO Pagos</p>
+                            </button>
+                        </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <section class="custom-card">
-        <div class="row mb-4 mt-4">
-            <div class="col-md-4" style="padding-top: 20px">
-                <a class="btn btn-primary-custom btn-lg" asp-controller="Order" asp-action="Create">
-                    + Novo Pedido
-                </a>
-            </div>
-
-            <div class="col-md-8 row justify-content-end">
-                <div class="col-md-4">
-                    <label for="search-order-filter" class="form-label fw-thin">
-                        <i class="fa-solid fa-magnifying-glass fa-sm"></i>
-                        BUSCAR:
-                    </label>
-                    <input id="search-order-filter" class="form-control" placeholder="Busque cliente ou sabor" />
-                </div>
-
-                <div class="col-md-4">
-                    <label for="payment-filter" class="form-label fw-thin">
-                        <i class="fa-solid fa-money-bill fa-sm"></i>
-                        STATUS:
-                    </label>
-                    <select id="payment-filter" name="payment-filter" class="form-select form-control">
-                        <option value="all">Todos</option>
-                        <option value="paid">Pagos</option>
-                        <option value="unpaid">Pendentes</option>
-                    </select>
-                </div>
-
-                <div class="col-md-4">
-                    <form id="filterByDate-form" asp-controller="Order" asp-action="Orders" method="GET">
-                        <label for="createdAt" class="form-label fw-thin">
-                            <i class="fa-regular fa-calendar fa-sm"></i> DATA:
-                        </label>
-                        <input id="createdAt" name="createdAt" type="date" class="form-control"
-                            style="max-width: 300px;">
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        @if (Model.Count > 0)
-        {
-            <table id="orders-table" class="styled-table table">
-                <thead>
-                    <tr class="table-head-row">
-                        <th>Detalhes</th>
-                        <th>Data do Pedido</th>
-                        <th>Cliente</th>
-                        <th>Sabor</th>
-                        <th>Valor</th>
-                        <th>Pagamento</th>
-                        <th>Status</th>
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+        <div class="relative overflow-x-auto">
+            <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 rounded-s-lg">
+                            Data
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Cliente
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Sabor
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Valor
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Pagamento
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Status
+                        </th>
+                        <th scope="col" class="px-6 py-3 rounded-e-lg">
+                            Ações
+                        </th>
                     </tr>
                 </thead>
-                @foreach (var order in Model)
+
+                @if (!orders.Any())
                 {
-                    <tbody id="orders-tableBody" class="table-group-divider">
-                        <tr class="table-row">
-                            <td>
-                                <a id="open-order-details" href="pedidos/detalhes/@order.Id" class="show-details"
-                                    data-order-id="@order.Id">
-                                    <i class="fa-solid fa-circle-info fa-lg"></i>
-                                </a>
-                            </td>
-                            <td id="createdAt-order">@order.CreatedAt.Date.ToString("dd/MM/yyyy")</td>
-                            <td>@order.Customer</td>
-                            <td>@order.Meal</td>
-                            <td id="order-price"><b>R$</b> @Math.Round(@order.Price, 2)</td>
-                            <td>
-                                @if (@order.PaymentType.Equals("PIX"))
-                                {
-                                    <i class="fa-brands fa-pix fa-xl"></i>
-                                }
-                                else
-                                {
-                                    <i class="fa-solid fa-money-bill-wave fa-xl"></i>
-                                }
-                            </td>
-                            <td>
-                                @if (!order.IsPaid)
-                                {
-                                    <p class="status pending">Pendente</p>
-                                }
-                                else
-                                {
-                                    <p class="status paid">Pago</p>
-                                }
+                    <tbody>
+                        <tr>
+                            <td colspan="7" class="text-center p-6">
+                                @* <img src="https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif"
+                                alt="Nenhum pedido" class="w-64 h-64 mx-auto"> *@
+                                <p class="text-gray-500 text-lg mt-4">Nenhum pedido encontrado</p>
                             </td>
                         </tr>
                     </tbody>
                 }
+                else
+                {
+                    <tbody>
+                        @foreach (var order in orders)
+                        {
+                            <tr class="bg-white">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                    @order.CreatedAt
+                                </th>
+                                <td class="px-6 py-4">
+                                    @order.Customer
+                                </td>
+                                <td class="px-6 py-4">
+                                    @order.Meal
+                                </td>
+                                <td class="px-6 py-4">
+                                    R$ @formatPrice(order.Price)
+                                </td>
+                                <td class="px-6 py-4">
+                                    @order.PaymentType
+                                </td>
+
+                                @if (order.IsPaid)
+                                {
+                                    <td class="px-6 py-4">
+                                        <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded">
+                                            Pago
+                                        </span>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="px-6 py-4">
+                                        <span class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded">
+                                            Pendente
+                                        </span>
+                                    </td>
+                                }
+                                <td scope="row" class="flex gap-10 px-6 py-4">
+                                    @if (!order.IsPaid)
+                                    {
+                                        <form asp-controller="Order" asp-action="MarkOrderAsPaid" asp-route-orderId="@order.Id">
+                                            <button class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
+                                                type="submit">
+                                                Confirmar Pagamento
+                                            </button>
+                                        </form>
+                                    }
+
+                                    <a asp-controller="Order" asp-action="Detail" asp-route-orderId="@order.Id"
+                                        class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+                                        Detalhes
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                }
             </table>
-
-            <div class="pagination justify-content-center">
-                <button id="previousPage" class="btn btn-primary-custom btn-sm previous-page">
-                    <i class="fa-solid fa-chevron-left" style="color: #ffffff;"></i>
-                </button>
-
-                <div class="current-and-total-pages">
-                    <span id="currentPage" class="current-page-filter">Página 1 </span>
-                    <span id="totalPages" class="total-page-filter"> de 1</span>
-                </div>
-
-                <button id="nextPage" class="btn btn-primary-custom btn-sm ">
-                    <i class="fa-solid fa-chevron-right" style="color: #ffffff;"></i>
-                </button>
-            </div>
-        }
-        else
-        {
-            <div class="no-orders-found">
-                <img src="~/img/nao-encontrado.png">
-                <h4>Nenhum pedido encontrado. <a asp-controller="Order" asp-action="Create">Clique aqui</a>
-                    para cadastrar um novo pedido.</h4>
-            </div>
-        }
-    </section>
-
-    <div id="order-details-modal-card" class="hidden order-details-modal-card">
-        <!-- Get a modal of order details (Being loaded on _Details.cshtml) -->
+        </div>
     </div>
 
-    <div id="modal-backdrop" class="modal-backdrop hidden"></div>
+    @{
+        int totalPages = Model.TotalPages;
+        int currentPage = Model.PageNumber;
+        int startPage = Math.Max(1, currentPage - 2);
+        int endPage = Math.Min(totalPages, currentPage + 2);
+    }
+
+    <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4" aria-label="Table navigation">
+        <span class="text-sm font-normal text-gray-500  mb-4 md:mb-0 block w-full md:inline md:w-auto">
+            Total de pedidos encontrados: <b>@Model.TotalItems</b>
+        </span>
+        <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+            <li>
+                <a asp-route-pageNumber="1"
+                    class="@(Model.PageNumber == 1 ? "disabled pointer-events-none" : "") flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700">
+                    Início
+                </a>
+            </li>
+
+            <li>
+                <a asp-route-pageNumber="@(Model.PageNumber - 1)"
+                    class="@(Model.HasPreviousPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                    Anterior
+                </a>
+            </li>
+
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <li>
+                    <a asp-route-pageNumber="@i"
+                        class="@(Model.PageNumber == @i ? "disabled pointer-events-none" : "") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <li>
+                <a asp-route-pageNumber="@(Model.PageNumber + 1)"
+                    class="@(Model.HasNextPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                    Próxima
+                </a>
+            </li>
+
+            <li>
+                <a asp-route-pageNumber="@endPage"
+                    class="@(Model.HasNextPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700">
+                    Final
+                </a>
+            </li>
+        </ul>
+    </nav>
+    </div>
 
 </section>

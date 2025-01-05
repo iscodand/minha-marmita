@@ -27,6 +27,34 @@ namespace Infrastructure.Data.Repositories
                                 .ConfigureAwait(false);
         }
 
+        public async Task<IEnumerable<Meal>> SearchByMealAsync(string name)
+        {
+            return await _meals.AsNoTracking()
+                               .Where(x => x.Description.ToUpper().Trim().Contains(name.ToUpper().Trim()))
+                               .ToListAsync()
+                               .ConfigureAwait(false);
+        }
+
+        public async Task<(IEnumerable<Meal> meals, int count)> GetByCompanyPagedAsync(int companyId, int pageNumber, int pageSize)
+        {
+            IEnumerable<Meal> meals = await _meals.AsNoTracking()
+                            .Include(x => x.User)
+                            .Include(x => x.Company)
+                            .Include(x => x.Orders)
+                            .Where(x => x.CompanyId == companyId)
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync()
+                            .ConfigureAwait(false);
+
+            int count = await _meals.AsNoTracking()
+                                    .Where(x => x.CompanyId == companyId)
+                                    .CountAsync()
+                                    .ConfigureAwait(false);
+
+            return (meals, count);
+        }
+
         public async Task<ICollection<Meal>> GetMealsByCompanyAsync(int companyId)
         {
             return await _meals.AsNoTracking()

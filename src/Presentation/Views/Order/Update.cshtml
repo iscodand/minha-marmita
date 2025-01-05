@@ -1,156 +1,132 @@
 @model Presentation.ViewModels.Order.UpdateOrderViewModel;
 
 @{
-    ViewData["Title"] = $"Editar Pedido - N° {@Model.Id}";
+    var dropdown = Model.CreateOrderDropdown;
+    var order = Model;
+    ViewData["Title"] = $"Pedido - {@order.Id}";
     Layout = "_Layout";
 }
 
-@await Component.InvokeAsync("Menu")
+<section>
+    <div class="mb-8 flex">
+        <a asp-controller="Order" asp-action="Orders"
+           class="flex gap-2 shadow bg-blue-700 hover:bg-blue-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">
 
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="fill-white mt-1">
+                <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+            </svg>
 
-<link rel="stylesheet" href="~/css/create/create.css" asp-append-version="true" />
+            Voltar
+        </a>
+    </div>
 
-<section class="container">
+    <h1 class="text-3xl font-bold mb-6">Pedido N° @order.Id</h1>
 
-    <section class="create-form container">
-
-        <div class="custom-card create-page-title">
-            <h4>Editar Pedido</h4>
-            <span>N° @Model.Id</span>
-        </div>
-
-        <form asp-action="Update" asp-antiforgery="true">
+    <div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white">
+        <form asp-controller="Order" asp-action="Update" asp-route-orderId="@order.Id" class="max-w">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <section class="custom-card">
-
-                <div class="row">
-                    <div class="form-outline mb-4">
-                        <i class="fa-solid fa-file-lines fa-sm"></i>
-                        <label class="form-label fw-bolder">Descrição do Pedido (Não obrigatório)</label>
-                        <textarea class="form-control form-control-lg" asp-for="Description"
-                            placeholder="Adicione uma descrição para o pedido.">
-                        </textarea>
-                        <span class="text-danger fw-bolder sm" asp-validation-for="Description"></span>
-                    </div>
-
-                    <div class="form-outline mb-4 row">
-                        <div class="col-md-10">
-                            <i class="fa-solid fa-user fa-sm"></i>
-                            <label class="form-label fw-bolder">Cliente</label>
-                            @Html.DropDownListFor(model => model.CustomerId, new
-                                     SelectList(Model.CreateOrderDropdown.Customers, "Id",
-                                     "Name")
-                                     , new { @class = "form-control form-control-lg" })
-                        </div>
-                        <div class="col-md-2" style="padding-top: 2.3em">
-                            <a class="btn btn-primary-custom" asp-controller="Customer" asp-action="Create">+ Adicionar
-                                Cliente</a>
-                        </div>
-                    </div>
-
-                    <div class="form-outline mb-4 row">
-                        <div class="col-md-10">
-                            <i class="fa-solid fa-utensils fa-sm"></i>
-                            <label class="form-label fw-bolder">Sabor da Quentinha</label>
-                            @Html.DropDownListFor(model => model.MealId, new
-                                     SelectList(Model.CreateOrderDropdown.Meals, "Id",
-                                     "Description")
-                                     , new { @class = "form-control form-control-lg" })
-                        </div>
-                        <div class="col-md-2" style="padding-top: 2.3em">
-                            <a class="btn btn-primary-custom" asp-controller="Meal" asp-action="Create">+ Adicionar
-                                Sabor</a>
-                        </div>
-                    </div>
-
-                    <div class="form-outline mb-4 col-md-4">
-                        <i class="fa-solid fa-dollar-sign fa-sm"></i>
-                        <label class="form-label fw-bolder">Valor</label>
-                        <div class="input-group">
-                            <span class="input-group-text">R$</span>
-                            <input class="form-control form-control-lg" asp-for="Price" placeholder="0.00">
-                        </div>
-                        <span class="text-danger fw-bolder sm" asp-validation-for="Price"></span>
-                    </div>
-
-                    <div class="form-outline mb-4 col-md-4">
-                        <i class="fa-solid fa-money-bill-wave fa-sm"></i>
-                        <label class="form-label fw-bolder">Forma de Pagamento</label>
-                        @Html.DropDownListFor(model => model.PaymentTypeId, new
-                                 SelectList(Model.CreateOrderDropdown.PaymentTypes, "Id",
-                                 "Description")
-                                 , new { @class = "form-control form-control-lg" })
-                    </div>
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-select">
+                        Selecione um Cliente
+                    </label>
                 </div>
-
-                <div class="row">
-                    <style>
-                        .custom-switch {
-                            transform: scale(2);
-                            margin: 14px;
-                        }
-
-                        .form-switch .form-check-input {
-                            height: 1em;
-                            margin-left: -1.5em;
-                        }
-
-                        .form-check-input:checked {
-                            background-color: #009879;
-                            border-color: #009879;
-                        }
-                    </style>
-
-                    @if (Model.IsPaid)
-                    {
-                        <div class="form-outline mb-4 col-md-4">
-                            <i class="fa-solid fa-square-check"></i>
-                            <label class="form-label fw-bolder">Pagamento Realizado</label>
-                            <div class="form-check form-check-lg form-switch custom-switch-div">
-                                <input class="form-check-input custom-switch" type="checkbox" role="switch"
-                                    asp-for="IsPaid">
-                            </div>
-                        </div>
-
-                        <div class="form-outline mb-4 col-md-4">
-                            <i class="fa-regular fa-calendar-check"></i>
-                            <label class="form-label fw-bolder">Pago em</label>
-                            <div class="input-group">
-                                <input class="form-control form-control-lg" asp-for='PaidAt.Value' disabled>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="form-outline mb-4 col-md-4">
-                            <i class="fa-solid fa-square-check"></i>
-                            <label class="form-label fw-bolder">Pagamento Realizado</label>
-                            <div class="form-check form-check-lg form-switch">
-                                <input class="form-check-input custom-switch" type="checkbox" role="switch"
-                                    asp-for="IsPaid">
-                            </div>
-                        </div>
-                    }
+                <div class="md:w-2/3">
+                    @Html.DropDownListFor(model => model.CustomerId, new
+                             SelectList(dropdown.Customers, "Id",
+                             "Name")
+                             , new { @class = "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" })
                 </div>
-
-                <partial name="../Shared/Partials/_Messages.cshtml" />
-
-                <div class="pt-1 mt-4">
-                    <button class="btn btn-primary-custom" type="submit" style="margin-right: 20px;">
-                        <i class="fa-solid fa-check fa-lg" style="color: #ffffff; padding-right: 4px;"></i> Editar
-                    </button>
-                </div>
-
-            </section>
-
-            <div class="pt-1">
-                <a asp-controller="Order" asp-action="Orders" class="btn btn-warning pt-1">
-                    <i class="fa-solid fa-arrow-left fa-lg" style="color: #ffffff; padding-right: 4px;"></i>
-                    <b>Voltar</b>
-                </a>
             </div>
 
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-select">
+                        Selecione um Sabor
+                    </label>
+                </div>
+                <div class="md:w-2/3">
+                    @Html.DropDownListFor(model => model.MealId, new
+                             SelectList(dropdown.Meals, "Id",
+                             "Description")
+                             , new { @class = "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" })
+                </div>
+            </div>
+
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-select">
+                        Selecione uma Forma de Pagamento
+                    </label>
+                </div>
+                <div class="md:w-2/3">
+                    @Html.DropDownListFor(model => model.PaymentTypeId, new
+                             SelectList(dropdown.PaymentTypes, "Id",
+                             "Description")
+                             , new { @class = "shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" })
+                </div>
+            </div>
+
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-textfield">
+                        Valor do Pedido
+                    </label>
+                </div>
+                <div class="md:w-2/3">
+                    <div class="flex">
+                        <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-e-0 border-gray-300
+                    rounded-s-md">
+                            R$
+                        </span>
+                        <input asp-for="Price" type="text" id="price" class="rounded-none rounded-e-lg bg-gray-50 border
+                        border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5">
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-textfield">
+                        Situação de Pagamento
+                    </label>
+                </div>
+                <div class="md:w-2/3">
+                    <div class="flex">
+                        <label class="inline-flex items-center me-5 cursor-pointer">
+                            <select id="countries" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                <option selected>Selecione o Status</option>
+                                <option value="@true">Pago</option>
+                                <option value="@false">Pendente</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:flex mb-6">
+                <div class="md:w-1/3">
+                    <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="description">
+                        Observação (opcional)
+                    </label>
+                </div>
+                <div class="md:w-2/3">
+                    <textarea asp-for="Description" class="rounded bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5" id="description" value="" rows="8"></textarea>
+                    <p class="py-2 text-sm text-gray-600">Adicione uma descrição para o pedido (opcional)</p>
+                </div>
+            </div>
+
+            <div class="md:flex md:items-center">
+                <div class="md:w-1/3"></div>
+                <div class="md:w-2/3">
+                    <button class="shadow bg-green-700 hover:bg-green-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                            type="submit">
+                        Salvar Pedido
+                    </button>
+                </div>
+            </div>
         </form>
-    </section>
+    </div>
+
 </section>

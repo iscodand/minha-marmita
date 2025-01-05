@@ -1,6 +1,7 @@
 using Application.Contracts.Services;
 using Application.Dtos.Meal;
 using Application.Dtos.Order;
+using Application.Parameters;
 using Application.Wrappers;
 using Domain.Entities;
 using Infrastructure.Data.Repositories;
@@ -18,7 +19,7 @@ namespace Application.Services
 
         public async Task<Response<GetMealDto>> GetMealByIdAsync(int mealId, int userCompanyId)
         {
-            Meal meal = await _mealRepository.GetByIdAsync(mealId);
+            Meal meal = await _mealRepository.DetailMealAsync(mealId);
 
             if (meal == null)
             {
@@ -38,20 +39,26 @@ namespace Application.Services
                 };
             }
 
-            GetMealDto getMealDto = new()
-            {
-                Id = meal.Id,
-                Description = meal.Description,
-                Accompaniments = meal.Accompaniments,
-                CreatedBy = meal.UserId
-            };
+            var mappedMeal = GetMealDto.Map(meal);
 
             return new Response<GetMealDto>()
             {
                 Message = "Sabor encontrado com sucesso",
                 Succeeded = true,
-                Data = getMealDto
+                Data = mappedMeal
             };
+        }
+
+        public async Task<Response<IEnumerable<GetMealDto>>> SearchByMealAsync(string name)
+        {
+            IEnumerable<Meal> meals = await _mealRepository.SearchByMealAsync(name);
+            var mappedMeals = GetMealDto.Map(meals);
+
+            return new Response<IEnumerable<GetMealDto>>(
+                message: "Sabores recuperados com sucesso.",
+                data: mappedMeals,
+                status: 200
+            );
         }
 
         public async Task<Response<DetailMealDto>> DetailMealAsync(int mealId, int userCompanyId)
@@ -114,11 +121,12 @@ namespace Application.Services
 
         public async Task<Response<CreateMealDto>> CreateMealAsync(CreateMealDto createMealDto)
         {
-            if (createMealDto == null)
+            bool mealExists = await _mealRepository.MealExistsByDescriptionAsync(createMealDto.Description, createMealDto.CompanyId);
+            if (mealExists)
             {
                 return new Response<CreateMealDto>()
                 {
-                    Message = "Cliente não pode ser nulo.",
+                    Message = "Esse sabor já está cadastrado",
                     Succeeded = false
                 };
             }
@@ -274,6 +282,19 @@ namespace Application.Services
                 Message = "Sabor deletado com sucesso",
                 Succeeded = true
             };
+        }
+
+        public async Task<PagedResponse<IEnumerable<GetMealDto>>> GetByCompanyPagedAsync(int companyId, RequestParameter parameter)
+        {
+            var meals = await _mealRepository.GetByCompanyPagedAsync(companyId, parameter.PageNumber, parameter.PageSize);
+            IEnumerable<GetMealDto> mappedMeals = GetMealDto.Map(meals.meals);
+
+            return new(
+                data: mappedMeals,
+                pageNumber: parameter.PageNumber,
+                pageSize: parameter.PageSize,
+                totalItems: meals.count
+            );
         }
     }
 }

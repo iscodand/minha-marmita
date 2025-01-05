@@ -5,6 +5,7 @@ using Application.Contracts.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Application.Contracts.Services;
 using Application.Dtos.Order;
+using Application.Parameters;
 
 namespace Application.Services
 {
@@ -37,6 +38,13 @@ namespace Application.Services
                 Succeeded = true,
                 Data = mappedUsers
             };
+        }
+
+        public async Task<PagedResponse<IEnumerable<GetUserDto>>> GetUsersByCompanyPagedAsync(int companyId, RequestParameter parameter)
+        {
+            var users = await _userRepository.GetUsersByCompanyPagedAsync(companyId, parameter.PageNumber, parameter.PageSize);
+            var mappedUsers = GetUserDto.Map(users.users);
+            return new(mappedUsers, parameter.PageNumber, parameter.PageSize, users.count);
         }
 
         public async Task<Response<GetUserDto>> GetUserByUsernameAsync(string username)

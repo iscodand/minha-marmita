@@ -1,0 +1,99 @@
+@model Application.DTOs.Company.Response.DetailCompanyDTO;
+
+@{
+    var company = Model;
+    ViewData["Title"] = $"Empresa - {company.Name}";
+    Layout = "_Layout";
+}
+
+<script src="~/js/utils/pagination.js"></script>
+
+<h1 class="text-3xl font-bold mb-6">@company.Name</h1>
+
+<div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
+    <div class="bg-white p-4 shadow rounded-lg">
+        <div class="flex justify-center items-center">
+            <div>
+                <p>Dashboard</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-center bg-white p-6 rounded-lg shadow-lg">
+        <h4>Em manutenção!</h4>
+    </div>
+
+    <div class="bg-white p-4 shadow rounded-lg">
+        <div class="flex justify-center items-center">
+            <div>
+                <p>Lista de Funcionários</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+        <div class="relative overflow-x-auto">
+            <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 rounded-s-lg">
+                            Nome
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Email
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Usuário
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Cargos
+                        </th>
+                        <th scope="col" class="px-6 py-3 rounded-e-lg">
+                            Ações
+                        </th>
+                    </tr>
+                </thead>
+
+                @if (!company.Employees.Any())
+                {
+                    <tbody>
+                        <tr>
+                            <td colspan="7" class="text-center p-6">
+                                <p class="text-gray-500 text-lg mt-4">Nenhum funcionário encontrado</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                }
+                else
+                {
+                    <tbody>
+                        @foreach (var employee in company.Employees)
+                        {
+                            <tr class="bg-white">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                    @employee.Name
+                                </th>
+                                <td class="px-6 py-4">
+                                    @employee.Email
+                                </td>
+                                <td class="px-6 py-4">
+                                    @employee.Username
+                                </td>
+                                <td class="px-6 py-4">
+                                    @employee.Roles
+                                </td>
+                                <td scope="row" class="flex gap-10 px-6 py-4">
+                                    <a asp-controller="Employee" asp-action="UpdateEmployee"
+                                       asp-route-employeeUsername="@employee.Username"
+                                       class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+                                        Detalhes
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                }
+            </table>
+        </div>
+    </div>
+</div>

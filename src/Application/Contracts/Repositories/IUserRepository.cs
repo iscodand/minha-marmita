@@ -8,6 +8,7 @@ namespace Application.Contracts.Repositories
         public Task<User> GetUserByEmailAsync(string email);
         public Task<User> GetWithOrdersAsync(string username);
         public Task<ICollection<User>> GetUsersByCompanyAsync(int companyId);
+        public Task<(IEnumerable<User> users, int count)> GetUsersByCompanyPagedAsync(int companyId, int pageNumber, int pageSize);
         public Task<bool> UserExistsByUsernameAsync(string username, string userId = "");
         public Task<bool> UserExistsByEmailAsync(string email, string userId = "");
     }

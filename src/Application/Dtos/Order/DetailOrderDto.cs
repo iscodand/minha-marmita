@@ -1,3 +1,5 @@
+using Domain.Entities;
+
 namespace Application.Dtos.Order
 {
     public class DetailOrderDto
@@ -16,5 +18,26 @@ namespace Application.Dtos.Order
         public string CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+
+        public static DetailOrderDto Map(Domain.Entities.Order order)
+        {
+            return new()
+            {
+                Id = order.Id,
+                Description = order.Description,
+                Price = order.Price,
+                IsPaid = order.IsPaid,
+                PaidAt = order.PaidAt,
+                PaymentType = order.PaymentType.Description,
+                PaymentTypeId = order.PaymentType.Id,
+                MealId = order.Meal.Id,
+                Meal = order.Meal.Description,
+                CustomerId = order.Customer.Id,
+                Customer = order.Customer.Name,
+                CreatedBy = order.User.Name,
+                CreatedAt = order.CreatedAt,
+                UpdatedAt = order.UpdatedAt
+            };
+        }
     }
 }

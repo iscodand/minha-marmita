@@ -1,3 +1,5 @@
+using Application.Dtos.Order;
+
 namespace Presentation.ViewModels.Order
 {
     public class UpdateOrderViewModel
@@ -17,5 +19,24 @@ namespace Presentation.ViewModels.Order
         public DateTime? UpdatedAt { get; set; }
 
         public CreateOrderDropdown CreateOrderDropdown { get; set; }
+
+        public static UpdateOrderViewModel Map(DetailOrderDto dto, CreateOrderDropdown dropdown)
+        {
+            return new()
+            {
+                Id = dto.Id,
+                Description = dto.Description,
+                Price = dto.Price,
+                CustomerId = dto.CustomerId,
+                MealId = dto.MealId,
+                PaymentTypeId = dto.PaymentTypeId,
+                IsPaid = dto.IsPaid,
+                PaidAt = dto.PaidAt,
+                CreatedAt = dto.CreatedAt,
+                UpdatedAt = dto.UpdatedAt,
+
+                CreateOrderDropdown = dropdown
+            };
+        }
     }
 }

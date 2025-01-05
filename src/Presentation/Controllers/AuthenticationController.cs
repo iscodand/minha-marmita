@@ -25,6 +25,7 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [Route("login/")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginUserViewModel loginUserViewModel)
         {
             if (ModelState.IsValid)

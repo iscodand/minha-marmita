@@ -8,5 +8,6 @@ namespace Application.Contracts.Services
     {
         public Task<Response<string>> CreateCompanyAsync(CreateCompanyRequest request);
         public Task<Response<IEnumerable<CompanyDTO>>> GetCompaniesAsync();
+        public Task<Response<DetailCompanyDTO>> GetCompanyByIdAsync(int companyId);
     }
 }

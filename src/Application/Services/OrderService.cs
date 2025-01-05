@@ -4,6 +4,7 @@ using Domain.Entities;
 using Application.Contracts.Repositories;
 using Infrastructure.Data.Repositories;
 using Application.Contracts.Services;
+using Application.Parameters;
 
 namespace Application.Services
 {
@@ -13,16 +14,19 @@ namespace Application.Services
         private readonly IPaymentTypeRepository _paymentTypeRepository;
         private readonly IMealRepository _mealRepository;
         private readonly ICustomerRepository _customerRepository;
+        private readonly ICompanyRepository _companyRepository;
 
         public OrderService(IOrderRepository orderRepository,
                             IPaymentTypeRepository paymentTypeRepository,
                             IMealRepository mealRepository,
-                            ICustomerRepository customerRepository)
+                            ICustomerRepository customerRepository,
+                            ICompanyRepository companyRepository)
         {
             _orderRepository = orderRepository;
             _paymentTypeRepository = paymentTypeRepository;
             _mealRepository = mealRepository;
             _customerRepository = customerRepository;
+            _companyRepository = companyRepository;
         }
 
         public async Task<Response<CreateOrderDto>> CreateOrderAsync(CreateOrderDto createOrderDto)
@@ -127,30 +131,44 @@ namespace Application.Services
                 };
             }
 
-            DetailOrderDto detailOrderDto = new()
-            {
-                Id = order.Id,
-                Description = order.Description,
-                Price = order.Price,
-                IsPaid = order.IsPaid,
-                PaidAt = order.PaidAt,
-                PaymentType = order.PaymentType.Description,
-                PaymentTypeId = order.PaymentType.Id,
-                MealId = order.Meal.Id,
-                Meal = order.Meal.Description,
-                CustomerId = order.Customer.Id,
-                Customer = order.Customer.Name,
-                CreatedBy = order.User.Name,
-                CreatedAt = order.CreatedAt,
-                UpdatedAt = order.UpdatedAt
-            };
+            DetailOrderDto detailOrderDto = DetailOrderDto.Map(order);
 
             return new Response<DetailOrderDto>()
             {
                 Data = detailOrderDto,
-                Message = $"Pedido {detailOrderDto.Id} encontrado com sucesso.",
+                Message = "Pedido encontrado com sucesso.",
                 Succeeded = true
             };
+        }
+
+        public async Task<PagedResponse<IEnumerable<GetOrderDto>>> GetOrdersByDateRangePagedAsync(int companyId, RequestParameter parameter)
+        {
+            Company company = await _companyRepository.GetByIdAsync(companyId);
+            if (company is null)
+            {
+                return new()
+                {
+                    Message = "Empresa não encontrada. Verifique e tente novamente.",
+                    Succeeded = false
+                };
+            }
+
+            var orders = await _orderRepository.GetOrdersByDateRangePagedAsync(
+                companyId,
+                parameter.InitialDate,
+                parameter.FinalDate,
+                parameter.PageSize,
+                parameter.PageNumber);
+
+            IEnumerable<GetOrderDto> mappedOrders = GetOrderDto.Map(orders.orders);
+
+            // T data, int pageNumber, int pageSize, int totalItems = 0
+            return new(
+                data: mappedOrders,
+                pageNumber: parameter.PageNumber,
+                pageSize: parameter.PageSize,
+                totalItems: orders.count
+            );
         }
 
         public async Task<Response<IEnumerable<GetOrderDto>>> GetOrdersByCompanyAsync(int companyId)
@@ -175,7 +193,7 @@ namespace Application.Services
             };
         }
 
-        public async Task<Response<IEnumerable<GetOrderDto>>> GetOrdersByDateAsync(int companyId, DateTime? date)
+        public async Task<PagedResponse<IEnumerable<GetOrderDto>>> GetOrdersByDateAsync(int companyId, DateTime? date)
         {
             if (companyId <= 0)
             {
@@ -206,16 +224,6 @@ namespace Application.Services
         public async Task<Response<IEnumerable<GetOrderDto>>> GetOrdersByDateRangeAsync(int companyId, DateTime? initialDate, DateTime? finalDate)
         {
             ICollection<Order> orders = await _orderRepository.GetOrdersByDateRangeAsync(companyId, initialDate, finalDate);
-
-            if (orders == null)
-            {
-                return new()
-                {
-                    Message = "Pedidos não encontrados com o filtro atual.",
-                    Succeeded = false
-                };
-            }
-
             IEnumerable<GetOrderDto> getOrderDtoCollection = GetOrderDto.Map(orders);
 
             return new()

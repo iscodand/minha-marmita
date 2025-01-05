@@ -8,6 +8,7 @@ using Application.Dtos.Order;
 using Presentation.Controllers.Common;
 using Application.DTOs.Authentication;
 using Application.Contracts.Services;
+using Application.Parameters;
 
 namespace Presentation.Controllers
 {
@@ -24,54 +25,30 @@ namespace Presentation.Controllers
 
         [HttpGet]
         [Route("")]
-        public async Task<IActionResult> Customers()
+        public async Task<IActionResult> Customers(int pageNumber = 1)
         {
-            GetAuthenticatedUserDto authenticatedUser = SessionService.RetrieveUserSession();
-            Response<IEnumerable<GetCustomerDto>> customers = await _customerService.GetCustomersByCompanyAsync(authenticatedUser.CompanyId);
-
-            List<GetCustomerViewModel> getCustomerDtoCollection = new();
-            foreach (GetCustomerDto customer in customers.Data)
+            RequestParameter parameters = new()
             {
-                GetCustomerViewModel viewModel = new()
-                {
-                    Id = customer.Id,
-                    Name = customer.Name,
-                    Phone = customer.Phone,
-                    IsActive = customer.IsActive,
-                    CreatedBy = customer.CreatedBy,
-                    OrdersCount = customer.OrdersCount
-                };
+                PageNumber = pageNumber,
+                PageSize = 10,
+            };
 
-                getCustomerDtoCollection.Add(viewModel);
-            }
+            GetAuthenticatedUserDto authenticatedUser = SessionService.RetrieveUserSession();
 
-            return View(getCustomerDtoCollection.OrderByDescending(x => x.OrdersCount).ToList());
+            var result = await _customerService.GetCustomersByCompanyAsync(
+                authenticatedUser.CompanyId,
+                parameters
+            );
+
+            return View(result);
         }
 
         [HttpGet]
-        [Route("listar-clientes/")]
-        public async Task<IActionResult> ListCustomers()
+        [Route("buscar")]
+        public async Task<IActionResult> SearchByCustomerAsync([FromQuery] string name)
         {
-            GetAuthenticatedUserDto authenticatedUser = SessionService.RetrieveUserSession();
-            Response<IEnumerable<GetCustomerDto>> result = await _customerService.GetCustomersByCompanyAsync(authenticatedUser.CompanyId);
-
-            List<GetCustomerViewModel> getCustomerDtoCollection = new();
-            foreach (GetCustomerDto customer in result.Data)
-            {
-                GetCustomerViewModel viewModel = new()
-                {
-                    Id = customer.Id,
-                    Name = customer.Name,
-                    Phone = customer.Phone,
-                    IsActive = customer.IsActive,
-                    CreatedBy = customer.CreatedBy,
-                    OrdersCount = customer.OrdersCount
-                };
-
-                getCustomerDtoCollection.Add(viewModel);
-            }
-
-            return Json(new { success = true, message = result.Message, data = getCustomerDtoCollection });
+            var result = await _customerService.SearchByCustomerAsync(name);
+            return Json(result);
         }
 
         [HttpGet]
@@ -112,55 +89,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
-        [Route("detalhes/{customerId}")]
-        public async Task<IActionResult> Detail(int customerId)
-        {
-            if (ModelState.IsValid)
-            {
-                GetAuthenticatedUserDto authenticatedUser = SessionService.RetrieveUserSession();
-                Response<DetailCustomerDto> result = await _customerService.DetailCustomerAsync(customerId, authenticatedUser.CompanyId);
-
-                if (result.Succeeded)
-                {
-                    List<GetOrderViewModel> getOrderViewModelCollection = new();
-                    foreach (GetOrderDto order in result.Data.Orders)
-                    {
-                        GetOrderViewModel getOrderViewModel = new()
-                        {
-                            Id = order.Id,
-                            Description = order.Description,
-                            Price = order.Price,
-                            IsPaid = order.IsPaid,
-                            PaidAt = order.PaidAt,
-                            PaymentType = order.PaymentType,
-                            Meal = order.Meal,
-                            Customer = order.Customer,
-                            CreatedBy = order.CreatedBy,
-                            CreatedAt = order.CreatedAt
-                        };
-
-                        getOrderViewModelCollection.Add(getOrderViewModel);
-                    }
-
-                    DetailCustomerViewModel detailCustomerViewModel = new()
-                    {
-                        Id = result.Data.Id,
-                        Name = result.Data.Name,
-                        Phone = result.Data.Phone,
-                        IsActive = result.Data.IsActive,
-                        CreatedBy = result.Data.CreatedBy,
-                        Orders = getOrderViewModelCollection
-                    };
-
-                    return View(detailCustomerViewModel);
-                }
-            }
-
-            return RedirectToAction(nameof(Customers));
-        }
-
-        [HttpGet]
-        [Route("editar/{customerId}")]
+        [Route("{customerId}")]
         public async Task<IActionResult> Update(int customerId)
         {
             if (ModelState.IsValid)
@@ -174,7 +103,8 @@ namespace Presentation.Controllers
                     {
                         Id = result.Data.Id,
                         Name = result.Data.Name,
-                        Phone = result.Data.Phone
+                        Phone = result.Data.Phone,
+                        DetailCustomer = result.Data
                     };
 
                     return View(updateCustomerViewModel);
@@ -185,7 +115,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        [Route("editar/{customerId}")]
+        [Route("{customerId}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(int customerId, UpdateCustomerViewModel updateCustomerViewModel)
         {
@@ -202,6 +132,7 @@ namespace Presentation.Controllers
                 };
 
                 Response<UpdateCustomerDto> result = await _customerService.UpdateCustomerAsync(updateCustomerDto);
+
                 ViewData["Message"] = result.Message;
 
                 if (result.Succeeded)

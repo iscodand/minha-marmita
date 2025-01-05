@@ -1,104 +1,185 @@
-@model List<Presentation.ViewModels.Meal.GetMealViewModel>;
+@using Application.Wrappers;
+@using Application.Dtos.Meal;
+
+@model PagedResponse<IEnumerable<GetMealDto>>;
 
 @{
-    ViewData["Title"] = "Clientes";
+    var meals = Model.Data;
+    ViewData["Title"] = "Sabores";
     Layout = "_Layout";
 }
 
-<script type="module" src="~/js/meals/filters/searchByMeal.js"></script>
-<script type="module" src="~/js/utils/pagination.js"></script>
+@* <script>
+    $(document).ready(function () {
+        $.ajax({
+            url: `/sabores/buscar?name=Carne`,
+            method: "GET",
+            contentType: "application/json",
+            success: function (response) {
+                console.log("Requisição bem-sucedida!", response);
+                alert("Requisição enviada com sucesso!");
+            },
+            error: function (xhr, status, error) {
+                console.error("Erro na requisição:", status, error);
+                alert("Ocorreu um erro. Verifique o console para mais detalhes.");
+            }
+        });
+    });
+</script> *@
 
-@await Component.InvokeAsync("Menu")
+<section>
 
-<section class="container-fluid" style="margin-top: -1.9rem; margin-bottom: -2rem; padding: 4rem;">
+    <h1 class="text-3xl font-bold mb-6">Sabores</h1>
 
-    <div class="custom-card page-title text-center">
-        <div class="mb-1">
-            <i class="fa-solid fa-utensils fa-lg"></i>
-        </div>
-        <h3>
-            Sabores
-        </h3>
-    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
+        <div class="bg-white p-4 shadow rounded-lg">
+            <div class="flex justify-between items-center">
+                <div>
+                    <a asp-controller="Meal" asp-action="Create"
+                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                        + Novo Sabor
+                    </a>
+                </div>
 
-    <section class="custom-card">
-        <div class="row mb-4 mt-4">
-            <div class="col-md-4" style="padding-top: 20px">
-                <a class="btn btn-primary-custom btn-lg" asp-controller="Meal" asp-action="Create">
-                    + Novo Sabor
-                </a>
-            </div>
-
-            <div class="col-md-8 row justify-content-end">
-                <div class="col-md-6">
-                    <i class="fa-solid fa-magnifying-glass fa-sm" style="padding-right: 5px;"></i>
-                    <label for="search-meal-filter" class="form-label fw-thin">BUSCAR:</label>
-                    <input id="search-meal-filter" class="form-control" placeholder="Busque por um sabor" />
+                <div>
+                    <label for="table-search" class="sr-only">Buscar</label>
+                    <div class="relative">
+                        <div
+                            class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                            </svg>
+                        </div>
+                        <input type="text" id="table-search-users"
+                            class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Buscar por sabor">
+                    </div>
                 </div>
             </div>
         </div>
 
-        @if (Model.Count > 0)
-        {
-            <table class="styled-table table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Descrição do Sabor</th>
-                        <th>Acompanhamentos</th>
-                        <th>Qtd. Pedidos</th>
-                    </tr>
-                </thead>
-                <tbody id="meals-tableBody">
-                    @foreach (var meal in Model.ToList())
-                    {
-                        <tr class="table-row">
-                            <td style="max-width: 50px;">
-                                <a type="button" asp-controller="Meal" asp-action="Detail" asp-route-mealId="@meal.Id">
-                                    <i class="fa-solid fa-circle-info fa-lg"></i>
-                                </a>
-                            </td>
-                            <td>@meal.Description</td>
-
-                            @if (meal.Accompaniments == null)
-                            {
-                                <td style="color: red">Não Informado</td>
-                            }
-                            else
-                            {
-                                <td>@meal.Accompaniments</td>
-                            }
-                            <td>
-                                <b style="color: #37419c;">@meal.OrdersCount</b> pedidos
-                            </td>
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <div class="relative overflow-x-auto">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 rounded-s-lg">
+                                Nome
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Acompanhamentos
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Qtd. Pedidos
+                            </th>
+                            <th scope="col" class="px-6 py-3 rounded-e-lg">
+                                Ações
+                            </th>
                         </tr>
+                    </thead>
+                    @if (!meals.Any())
+                    {
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="text-center p-6">
+                                    @* <img src="https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif"
+                                alt="Nenhum pedido" class="w-64 h-64 mx-auto"> *@
+                                    <p class="text-gray-500 text-lg mt-4">Nenhum sabor encontrado</p>
+                                </td>
+                            </tr>
+                        </tbody>
                     }
-                </tbody>
-            </table>
-
-            <div class="pagination justify-content-center">
-                <button id="previousPage" class="btn btn-primary-custom btn-sm previous-page">
-                    <i class="fa-solid fa-chevron-left" style="color: #ffffff;"></i>
-                </button>
-
-                <div class="current-and-total-pages">
-                    <span id="currentPage" class="current-page-filter">Página 1 </span>
-                    <span id="totalPages" class="total-page-filter"> de 1</span>
-                </div>
-
-                <button id="nextPage" class="btn btn-primary-custom btn-sm ">
-                    <i class="fa-solid fa-chevron-right" style="color: #ffffff;"></i>
-                </button>
+                    else
+                    {
+                        @foreach (var meal in meals)
+                        {
+                            <tbody>
+                                <tr class="bg-white">
+                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                        @meal.Description
+                                    </th>
+                                    @if (meal.Accompaniments is not null)
+                                    {
+                                        <td class="px-6 py-4">
+                                            @meal.Accompaniments
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td class="px-6 py-4">
+                                            Não informado
+                                        </td>
+                                    }
+                                    <td class="px-6 py-4">
+                                        @meal.OrdersCount pedido(s)
+                                    </td>
+                                    <td scope="row" class="px-6 py-4">
+                                        <a asp-controller="Meal" asp-action="Update" asp-route-mealId="@meal.Id"
+                                            class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+                                            Detalhes
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        }
+                    }
+                </table>
             </div>
-        }
-        else
-        {
-            <div class="no-orders-found">
-                <img src="~/img/nao-encontrado.png">
-                <h4>Nenhum sabor encontrado. <a asp-controller="Meal" asp-action="Create">Clique aqui</a>
-                    para cadastrar um novo sabor.</h4>
-            </div>
+        </div>
+
+        @{
+            int totalPages = Model.TotalPages;
+            int currentPage = Model.PageNumber;
+            int startPage = Math.Max(1, currentPage - 2);
+            int endPage = Math.Min(totalPages, currentPage + 2);
         }
 
-    </section>
+        <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
+            aria-label="Table navigation">
+            <span class="text-sm font-normal text-gray-500  mb-4 md:mb-0 block w-full md:inline md:w-auto">
+                Total de sabores encontrados: <b>@Model.TotalItems</b>
+            </span>
+            <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+                <li>
+                    <a asp-route-pageNumber="1"
+                        class="@(Model.PageNumber == 1 ? "disabled pointer-events-none" : "") flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700">
+                        Início
+                    </a>
+                </li>
+
+                <li>
+                    <a asp-route-pageNumber="@(Model.PageNumber - 1)"
+                        class="@(Model.HasPreviousPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                        Anterior
+                    </a>
+                </li>
+
+                @for (int i = startPage; i <= endPage; i++)
+                {
+                    <li>
+                        <a asp-route-pageNumber="@i"
+                            class="@(Model.PageNumber == @i ? "disabled pointer-events-none" : "") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                            @i
+                        </a>
+                    </li>
+                }
+
+                <li>
+                    <a asp-route-pageNumber="@(Model.PageNumber + 1)"
+                        class="@(Model.HasNextPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                        Próxima
+                    </a>
+                </li>
+
+                <li>
+                    <a asp-route-pageNumber="@endPage"
+                        class="@(Model.HasNextPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700">
+                        Final
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </section>

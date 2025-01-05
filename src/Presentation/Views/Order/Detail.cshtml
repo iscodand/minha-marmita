@@ -1,0 +1,48 @@
+@model Presentation.ViewModels.Order.GetOrderViewModel;
+
+@{
+    var order = Model;
+    ViewData["Title"] = $"Pedido - {order.Id}";
+    Layout = "_Layout";
+}
+
+<section>
+    <div class="mb-8 flex">
+        <a asp-controller="Order" asp-action="Orders"
+           class="flex gap-2 shadow bg-blue-700 hover:bg-blue-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">
+
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="fill-white mt-1">
+                <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+            </svg>
+
+            Voltar
+        </a>
+    </div>
+
+    <h1 class="text-3xl font-bold mb-6">Pedido N° @order.Id</h1>
+
+    <div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white">
+        <h3>Valor: R$ @order.Price</h3>
+        <h3>Valor: R$ @order.Price</h3>
+        <h3>Valor: R$ @order.Price</h3>
+        <h3>Valor: R$ @order.Price</h3>
+        <h3>Valor: R$ @order.Price</h3>
+        <h3>Valor: R$ @order.Price</h3>
+    </div>
+
+    <div class="p-8 mt-6 rounded flex gap-4 shadow bg-white">
+        <a asp-controller="Order" asp-action="Update" asp-route-orderId="@order.Id"
+           class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+            <i class="fa-solid fa-pencil text-white mr-2"></i>
+            Atualizar
+        </a>
+
+        <form>
+            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded">
+                <i class="fa-solid fa-trash text-white mr-2"></i>
+                Excluir
+            </button>
+        </form>
+    </div>
+
+</section>

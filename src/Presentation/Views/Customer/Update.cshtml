@@ -1,63 +1,190 @@
-@model Presentation.ViewModels.Customer.UpdateCustomerViewModel;
+@using System.Text.Json;
+@using Presentation.ViewModels.Customer;
+
+@model UpdateCustomerViewModel;
+
 
 @{
-    ViewData["Title"] = "Editar Cliente - " + Model.Name;
+    var customer = Model;
+    ViewData["Title"] = "Clientes";
     Layout = "_Layout";
 }
 
-@await Component.InvokeAsync("Menu")
+@functions {
+    public string formatPrice(decimal value)
+    {
+        return $"{value.ToString("0.00")}";
+    }
+}
 
-<link rel="stylesheet" href="~/css/create/create.css" asp-append-version="true" />
+<section>
+    <div class="mb-8 flex">
+        <a asp-controller="Customer" asp-action="Customers"
+            class="flex gap-2 shadow bg-blue-700 hover:bg-blue-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="fill-white mt-1">
+                <path
+                    d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+            </svg>
 
-<section class="container">
+            Voltar
+        </a>
+    </div>
 
-    <section class="create-form container">
+    <div class="mb-8">
+        <h1 class="text-3xl">Clientes > <b>@customer.Name</b></h1>
+    </div>
 
-        <div class="custom-card create-page-title">
-            <h4>Editar Cliente</h4>
-            <span>N° @Model.Id</span>
-        </div>
+    <div class="flex flex-col gap-10">
+        <div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white">
 
-        <form asp-action="Update" asp-antiforgery="true">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <form asp-action="Update" asp-antiforgery="true">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <section class="custom-card">
-                <div class="form-outline mb-4">
-                    <i class="fa-solid fa-user fa-sm"></i>
-                    <label class="form-label fw-bolder">Nome do Cliente</label>
-                    <input class="form-control form-control-lg" asp-for="Name" />
-                    <span class="text-danger fw-bolder sm" asp-validation-for="Name"></span>
+                <div class="md:flex mb-6">
+                    <div class="md:w-1/3">
+                        <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-textfield">
+                            Nome do Cliente
+                        </label>
+                    </div>
+                    <div class="md:w-2/3">
+                        <input asp-for="Name" type="text" placeholder="Digite o nome do cliente" id="name"
+                            class="rounded bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5">
+                        <span class="hidden flex items-center p-4 mt-3 text-sm text-red-800 rounded-lg bg-red-50"
+                            asp-validation-for="Name">
+                        </span>
+                    </div>
                 </div>
 
-                <div class="form-outline mb-4">
-                    <i class="fa-solid fa-phone fa-sm"></i>
-                    <label class="form-label fw-bolder">Telefone do Cliente</label>
-                    <input id="customerPhoneInput" type="text" class="form-control form-control-lg" asp-for="Phone"
-                        maxlength="16" />
-                    <span class="text-danger fw-bolder sm" asp-validation-for="Phone"></span>
-                </div>
+                <div class="md:flex mb-6">
+                    <div class="md:w-1/3">
+                        <label class="block text-gray-600 font-bold md:text-left md:mb-0 pr-4" for="my-textfield">
+                            Número de Telefone (opcional)
+                        </label>
+                    </div>
+                    <div class="md:w-2/3">
+                        <input asp-for="Phone" type="text" placeholder="(99) 9 9999-9999" id="phone"
+                            class="rounded bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5"
+                            oninput="formatPhone(this)">
+                        <span class="hidden flex items-center p-4 mt-3 text-sm text-red-800 rounded-lg bg-red-50"
+                            asp-validation-for="Phone">
+                        </span>
+                    </div>
 
-                <script src="~/js/utils/formatPhoneNumber.js"></script>
+                </div>
 
                 <partial name="../Shared/Partials/_Messages.cshtml" />
 
-                <div class="pt-1 mb-4">
-                    <button class="btn btn-primary-custom" type="submit" style="margin-right: 20px;">
-                        <i class="fa-solid fa-check fa-lg" style="color: #ffffff; padding-right: 4px;"></i>
-                        Salvar
-                    </button>
+                <div class="md:flex md:items-center">
+                    <div class="md:w-1/3">
+                    </div>
+                    <div class="md:w-2/3 flex">
+                        <button
+                            class="shadow bg-green-700 hover:bg-green-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                            type="submit">
+                            Salvar Cliente
+                        </button>
+                    </div>
                 </div>
+            </form>
+        </div>
 
-            </section>
+        <div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white">
+            <div class="text-center mb-4">
+                <h1 class="text-3xl font-bold mb-6">
+                    Detalhes do Cliente
+                </h1>
 
-            <div class="pt-1">
-                <a asp-controller="Customer" asp-action="Details" asp-route-customerId="@Model.Id"
-                    class="btn btn-warning pt-1">
-                    <i class="fa-solid fa-arrow-left fa-lg" style="color: #ffffff; padding-right: 4px;"></i>
-                    <b>Voltar</b>
-                </a>
+                @if (Model.DetailCustomer.Orders.Any())
+                {
+                    <span class="text-gray-400">10 últimos pedidos</span>
+                }
+
             </div>
 
-        </form>
-    </section>
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="relative overflow-x-auto">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 rounded-s-lg">
+                                    Data
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Cliente
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Sabor
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Valor
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Pagamento
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Status
+                                </th>
+                            </tr>
+                        </thead>
+
+                        @if (!Model.DetailCustomer.Orders.Any())
+                        {
+                            <tbody>
+                                <tr>
+                                    <td colspan="7" class="text-center p-6">
+                                        <p class="text-gray-500 text-lg mt-4">Nenhum pedido encontrado.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        }
+                        else
+                        {
+                            <tbody>
+                                @foreach (var order in Model.DetailCustomer.Orders)
+                                {
+                                    <tr class="bg-white">
+                                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                            @order.CreatedAt
+                                        </th>
+                                        <td class="px-6 py-4">
+                                            @order.Customer
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            @order.Meal
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            R$ @formatPrice(order.Price)
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            @order.PaymentType
+                                        </td>
+
+                                        @if (order.IsPaid)
+                                        {
+                                            <td class="px-6 py-4">
+                                                <span
+                                                    class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded">
+                                                    Pago
+                                                </span>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="px-6 py-4">
+                                                <span
+                                                    class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded">
+                                                    Pendente
+                                                </span>
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
 </section>

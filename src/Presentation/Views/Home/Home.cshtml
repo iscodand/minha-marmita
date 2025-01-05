@@ -1,239 +1,291 @@
+@model Application.Dtos.Data.GetDataDto;
+
 @{
+    var data = Model;
     ViewData["Title"] = "Home";
     Layout = "_Layout";
+
+    int totalOrders = data.Orders.Count();
+
+    decimal total = data.Orders.Select(x => x.Price).Sum();
+    decimal totalPaid = data.Orders.Where(x => x.IsPaid).Select(x => x.Price).Sum();
+    decimal totalToPay = data.Orders.Where(x => !x.IsPaid).Select(x => x.Price).Sum();
 }
 
-@await Component.InvokeAsync("Menu")
+<script src="~/js/charts/doughnutChart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- JS imports -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script type="module" src="~/js/home/charts/main.js"></script>
-<script src="~/js/utils/pagination.js"></script>
+@functions {
+    public string formatPrice(decimal value)
+    {
+        return $"{value.ToString("0.00")}";
+    }
+}
 
-<!-- CSS imports -->
-<link rel="stylesheet" href="~/css/home/home.css" asp-append-version="true" />
-<link rel="stylesheet" href="~/css/charts/charts.css" asp-append-version="true" />
-<link rel="stylesheet" href="~/css/elements/filter.css" asp-append-version="true" />
-<link rel="stylesheet" href="~/css/elements/box-orders.css" asp-append-version="true" />
-
-<section class="container-fluid custom-card" style="margin-top: -1.9rem; margin-bottom: -2rem; padding: 4rem;">
-
-
-    <div class="dashboard-title">
-        <h1 class="text-center">
-            <i class="fa-solid fa-magnifying-glass-chart"></i>
-            Dashboard de Pedidos
-        </h1>
+<section>
+    <div class="flex mb-6 justify-between">
+        <h1 class="text-3xl font-bold">Dashboard de Vendas</h1>
     </div>
 
-    <div class="custom-card">
+    <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-6">
+        <div class="flex justify-between bg-white p-4 shadow rounded-lg">
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="home-title">
-                    <h2>@Model.CompanyName</h2>
-                    <span id="current-date"></span>
-                </div>
+            <div>
+                <h1 class="flex gap-2 text-2xl">
+                    <svg class="mt-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path
+                            d="M3.9 54.9C10.5 40.9 24.5 32 40 32l432 0c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9 320 448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6l0-79.1L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" />
+                    </svg>
+                    Filtros
+                </h1>
             </div>
-            <div class="col-md-6">
-                <div class="filter-display row mb-3 justify-content-end">
-                    <div class="col-md-6">
-                        <label for="dateRangeSelected" class="form-label fw-thin">
-                            <i class="fa-regular fa-calendar fa-sm" style="padding-right: 5px;"></i>
-                            DATA:
-                        </label>
-                        <select id="dateRangeSelected" name="dateRangeSelected" class="form-select  form-control">
-                            <option value="today">Hoje</option>
-                            <option value="lastWeek" selected>Últimos 7 Dias</option>
-                            <option value="last15Days">Últimos 15 Dias</option>
-                            <option value="lastMonth">Últimos 30 Dias</option>
+
+            <div>
+                <form action="" method="get" class="flex gap-10">
+                    <div>
+                        <select name="date"
+                            class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                            <option value="today"
+                                selected="@(Context.Request.Query["date"] == "today" ? "selected" : null)">Hoje
+                            </option>
+                            <option value="lastWeek"
+                                selected="@(Context.Request.Query["date"] == "lastWeek" ? "selected" : null)">
+                                Últimos 7 dias</option>
+                            <option value="lastMonth"
+                                selected="@(Context.Request.Query["date"] == "lastMonth" ? "selected" : null)">Últimos
+                                30
+                                dias
+                            </option>
                         </select>
                     </div>
 
-                    @* <div class="col-md-3">
-                    <label for="initialDate" class="form-label fw-thin">
-                    <i class="fa-regular fa-calendar fa-sm" style="padding-right: 5px;"></i> DATA INICIAL:
-                    </label>
-                    <input id="initialDate" name="initialDate" type="date" class="form-control">
-                    </div>
+                    <button type="submit"
+                        class="flex bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                        <svg class="mt-1 mr-2 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path
+                                d="M3.9 54.9C10.5 40.9 24.5 32 40 32l432 0c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9 320 448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6l0-79.1L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" />
+                        </svg>
+                        Filtrar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-                    <div class="col-md-3">
-                    <label for="finalDate" class="form-label fw-thin">
-                    <i class="fa-regular fa-calendar fa-sm" style="padding-right: 5px;"></i> DATA FINAL:
-                    </label>
-                    <input id="finalDate" name="finalDate" type="date" class="form-control">
-                    </div> *@
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div class="bg-white p-6 shadow rounded-lg">
+            <div class="flex justify-between">
+                <div>
+                    <div class="text-gray-700 text-sm">Novos Pedidos</div>
+                    <div class="text-3xl font-bold mt-2">@totalOrders</div>
+                </div>
+
+                <div class="bg-blue-500 text-white rounded-full p-3 w-12 h-12 flex items-center justify-center mt-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 shadow rounded-lg">
+            <div class="flex justify-between">
+                <div>
+                    <div class="text-gray-700 text-sm">Total Vendido</div>
+                    <div class="text-3xl font-bold mt-2">R$ @formatPrice(total)</div>
+                </div>
+
+                <div class="bg-blue-500 text-white rounded-full p-3 w-12 h-12 flex items-center justify-center mt-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 shadow rounded-lg">
+            <div class="flex justify-between">
+                <div>
+                    <div class="text-gray-700 text-sm">Total Pago</div>
+                    <div class="text-3xl font-bold mt-2">R$ @formatPrice(totalPaid)</div>
+                </div>
+
+                <div class="bg-blue-500 text-white rounded-full p-3 w-12 h-12 flex items-center justify-center mt-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 shadow rounded-lg">
+            <div class="flex justify-between">
+                <div>
+                    <div class="text-gray-700 text-sm">Total a Receber</div>
+                    <div class="text-3xl font-bold mt-2">R$ @formatPrice(totalToPay)</div>
+                </div>
+
+
+                <div class="bg-blue-500 text-white rounded-full p-3 w-12 h-12 flex items-center justify-center mt-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
+                    </svg>
                 </div>
             </div>
         </div>
     </div>
 
-    <section class="custom-card">
+    <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
 
-        <div class="box-orders-section row">
-            <div class="col-md-2">
-                <div class="box-orders">
-                    <i class="fa-solid fa-chevron-up fa-lg"></i>
-                    <h2 id="home-new-orders-count"></h2>
-                    <p>Novos Pedidos</p>
+            <div class="flex justify-between">
+                <div class="flex gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                    <h2 class="text-xl font-bold mb-4">Últimos Pedidos</h2>
                 </div>
+                <a asp-controller="Order" asp-action="Orders"
+                    class="mb-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Ver mais pedidos
+                    >>></a>
             </div>
 
-            <div class="col-md-2">
-                <div id="box-orders" class="box-orders">
-                    <i class="fa-solid fa-x fa-lg"></i>
-                    <h2 id="home-total-orders-sum"></h2>
-                    <p>Valor Total</p>
-                </div>
-            </div>
+            <div class="relative overflow-x-auto">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 rounded-s-lg">
+                                Data
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Cliente
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Sabor
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Valor
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Pagamento
+                            </th>
+                            <th scope="col" class="px-6 py-3 rounded-e-lg">
+                                Status
+                            </th>
+                        </tr>
+                    </thead>
 
-            <div class="col-md-2">
-                <div class="box-orders">
-                    <i class="fa-solid fa-chart-line fa-lg"></i>
-                    <h2 id="home-paid-orders-sum">
-                    </h2>
-                    <p>Total Pago</p>
-                </div>
-            </div>
-
-            <div class="col-md-2">
-                <div class="box-orders">
-                    <i class="fa-solid fa-money-bill-transfer fa-lg"></i>
-                    <h2 id="home-unpaid-orders-sum"></h2>
-                    <p>Total a Receber</p>
-                </div>
-            </div>
-
-            <div class="col-md-2">
-                <div id="box-orders-paid" class="box-orders paid">
-                    <i class="fa-solid fa-check fa-lg"></i>
-                    <h2 id="home-paid-orders-count"></h2>
-                    <p>Pedidos Pagos</p>
-                </div>
-            </div>
-
-            <div class="col-md-2">
-                <div id="box-orders-unpaid" class="box-orders unpaid">
-                    <i class="fa-solid fa-x fa-lg"></i>
-                    <h2 id="home-unpaid-orders-count"></h2>
-                    <p>Pedidos NÃO Pagos</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-8">
-                <div class="custom-card table-home-data">
-                    <div class="row">
-                        <div class="col-md-10">
-                            <h3>
-                                <i class="fas fa-chart-bar fa-fw me-3"></i>
-                                Últimos Pedidos
-                            </h3>
-                        </div>
-                        <div class="col-md-2">
-                            <a class="btn btn-primary-custom" asp-controller="Order" asp-action="Create">
-                                + Novo Pedido
-                            </a>
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    <table id="orders-table" class="styled-table table small">
-                        <thead>
-                            <tr class="table-head-row">
-                                <th>Data</th>
-                                <th>Cliente</th>
-                                <th>Sabor</th>
-                                <th>Valor</th>
-                                <th>Pagamento</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="orders-tableBody" class="table-group-divider">
-                            <tr class="table-row">
-                                <td id="createdAt-order"></td>
-                                <td></td>
-                                <td></td>
-                                <td id="order-price"><b>R$</b></td>
-                                <td>
-                                    <i class="fa-brands fa-pix fa-xl"></i>
+                    @if (!Model.Orders.Any())
+                    {
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="text-center p-6">
+                                    @* <img src="https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif"
+                                alt="Nenhum pedido" class="w-64 h-64 mx-auto"> *@
+                                    <p class="text-gray-500 text-lg mt-4">Nenhum pedido encontrado.</p>
                                 </td>
-                                <td>
-                                    <p class="status pending">Pendente</p>
-                                </td>
-                            </tr>
-                            <tr class="table-row">
                             </tr>
                         </tbody>
-                    </table>
+                    }
+                    else
+                    {
+                        @foreach (var order in data.Orders)
+                        {
+                            <tbody>
+                                <tr class="bg-white">
+                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                        @order.CreatedAt
+                                    </th>
+                                    <td class="px-6 py-4">
+                                        @order.Customer
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @order.Meal
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        R$ @formatPrice(order.Price)
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @order.PaymentType
+                                    </td>
+                                    @if (order.IsPaid)
+                                    {
+                                        <td class="px-6 py-4">
+                                            <span
+                                                class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded">
+                                                Pago
+                                            </span>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td class="px-6 py-4">
+                                            <span
+                                                class="bg-yellow-100 text-yellow-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded">
+                                                Pendente
+                                            </span>
+                                        </td>
+                                    }
+                                </tr>
+                            </tbody>
+                        }
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
 
-                    <div id="no-orders-found" class="no-orders-found hidden">
-                        <img src="~/img/nao-encontrado.png">
-                        <h4>Nenhum pedido encontrado. <a asp-controller="Order" asp-action="Create">Clique aqui</a>
-                            para cadastrar um novo pedido.</h4>
-                    </div>
-
-                    <p class="text-end">
-                        <a class="link" asp-controller="Order" asp-action="Orders">>> Ver mais Pedidos</a>
-                    </p>
-                </div>
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <div class="flex gap-3">
+                <h2 class="text-xl font-bold mb-4">Sabores mais pedidos</h2>
             </div>
 
-            <div class="col-md-4">
-                <div class="chart-card custom-card">
-                    <h3>
-                        <i class="fas fa-utensils fa-fw me-3"></i>
-                        Sabores mais Pedidos
-                    </h3>
-                    <hr>
-                    <canvas id="mealsChart" class="chart-display"></canvas>
-                    <p class="text-end mt-4">
-                        <a class="link" asp-controller="Meal" asp-action="Meals">>> Ver mais Sabores</a>
-                    </p>
-                </div>
+            <div class="chart-container flex justify-center mt-3">
+                <canvas id="meals-chart" style="max-width: 400px; max-height: 430px;"></canvas>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-4">
-                <div class="chart-card custom-card">
-                    <h3>
-                        <i class="fas fa-users fa-fw me-3"></i>
-                        Top Clientes
-                    </h3>
-                    <hr>
-                    <canvas id="customersChart" class="chart-display"></canvas>
-                    <p class="text-end mt-4">
-                        <a class="link" asp-controller="Customer" asp-action="Customers">>> Ver mais Clientes</a>
-                    </p>
-                </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <div class="flex gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                </svg>
+                <h2 class="text-xl font-bold mb-4">Melhores clientes</h2>
             </div>
 
-            <div class="col-md-8">
-                <div class="chart-card custom-card">
-                    <h3>
-                        <i class="fa-solid fa-clipboard-list fa-fw me-3"></i>
-                        Histórico de Pedidos
-                    </h3>
-                    <hr>
-                    <canvas id="ordersChart" class="chart-display"></canvas>
-                </div>
+            <div class="chart-container flex justify-center mt-3">
+                <canvas id="customers-chart" style="max-width: 400px; max-height: 430px;"></canvas>
             </div>
         </div>
+    </div>
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="chart-card custom-card">
-                    <h3>
-                        <i class="fa-solid fa-chart-simple fa-fw me-3"></i>
-                        Margem de Lucro
-                    </h3>
-                    <hr>
-                    <canvas id="ordersProfitChart" class="chart-display"></canvas>
-                </div>
-            </div>
-        </div>
-    </section>
 </section>
+
+<script>
+    console.log(@Json.Serialize(data.Meals));
+    const mealsJsonData = @Json.Serialize(data.Meals);
+    const mealsLabels = mealsJsonData.map(item => item.description);
+    const mealsData = mealsJsonData.map(item => item.ordersCount);
+    generateDoughnutChart("meals-chart", mealsData, mealsLabels);
+
+    const customersJsonData = @Json.Serialize(data.Customers)
+        console.log(customersJsonData);
+    const customersLabels = customersJsonData.map(item => item.name);
+    const customersData = customersJsonData.map(item => item.ordersCount);
+    generateDoughnutChart("customers-chart", customersData, customersLabels);
+</script>

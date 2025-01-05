@@ -21,29 +21,20 @@
 
     <!-- TAILWIND STUFF -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 
     <!-- CHART JS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body class="bg-gray-100 flex">
-
+<body>
     <link rel="stylesheet" href="~/css/preloader/preloader.css" asp-append-version="true" />
     <script type="module" src="~/js/utils/preloader.js"></script>
     <div class="preloader">
         <div class="loader"></div>
     </div>
 
-    @if (User.Identity.IsAuthenticated)
-    {
-        <div>
-            @await Component.InvokeAsync("Menu")
-        </div>
-    }
-
     <!-- Conteúdo principal -->
-    <main class="flex-1 p-12 mt-14">
+    <main>
         @RenderBody()
     </main>
 

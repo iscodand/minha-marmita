@@ -15,5 +15,7 @@ namespace Presentation.ViewModels.Meal
         public string Accompaniments { get; set; }
 
         public int UserCompanyId { get; set; }
+
+        public DetailMealViewModel Meal { get; set; }
     }
 }
