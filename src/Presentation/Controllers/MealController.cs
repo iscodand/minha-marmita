@@ -138,31 +138,25 @@ namespace Presentation.Controllers
             return View(updateMealViewModel);
         }
 
-        [HttpDelete]
+        [HttpPost]
         [Route("deletar/{mealId}")]
         public async Task<IActionResult> Delete(int mealId)
         {
-            if (ModelState.IsValid)
+            GetAuthenticatedUserDto authenticatedUser = SessionService.RetrieveUserSession();
+
+            DeleteMealDto deleteMealDto = new()
             {
-                GetAuthenticatedUserDto authenticatedUser = SessionService.RetrieveUserSession();
+                Id = mealId,
+                UserCompanyId = authenticatedUser.CompanyId
+            };
 
-                DeleteMealDto deleteMealDto = new()
-                {
-                    Id = mealId,
-                    UserCompanyId = authenticatedUser.CompanyId
-                };
-
-                Response<GetMealDto> result = await _mealService.DeleteMealAsync(deleteMealDto);
-
-                if (result.Succeeded)
-                {
-                    return Json(new { success = true, message = result.Message });
-                }
-
-                return Json(new { success = false, message = result.Message });
+            Response<GetMealDto> result = await _mealService.DeleteMealAsync(deleteMealDto);
+            if (result.Succeeded)
+            {
+                return RedirectToAction(nameof(Meals));
             }
 
-            return Json(new { success = false, message = "Falha ao deletar sabor." });
+            return RedirectToAction(nameof(Meals));
         }
     }
 }
