@@ -1,8 +1,9 @@
-@using Application.DTOs.Company.Response;
-@model IEnumerable<CompanyDTO>;
+@using Application.DTOs.Company.Response
+@using Application.Wrappers
+@model PagedResponse<IEnumerable<CompanyDTO>>;
 
 @{
-    var companies = Model;
+    var companies = Model.Data;
     Layout = "_Layout";
 }
 
@@ -80,10 +81,11 @@
                                         @company.CNPJ
                                     </td>
                                     <td class="px-6 py-4">
-                                        @* @company. *@
+                                        @company.EmployeesCount funcionário(s)
                                     </td>
                                     <td scope="row" class="flex gap-10 px-6 py-4">
-                                        <a asp-action="Detail" asp-route-companyId=@company.Id class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+                                        <a asp-action="Detail" asp-route-companyId=@company.Id
+                                            class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
                                             Detalhes
                                         </a>
                                     </td>
@@ -94,4 +96,57 @@
                 </table>
             </div>
         </div>
+
+        @{
+            int totalPages = Model.TotalPages;
+            int currentPage = Model.PageNumber;
+            int startPage = Math.Max(1, currentPage - 2);
+            int endPage = Math.Min(totalPages, currentPage + 2);
+        }
+
+        <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
+            aria-label="Table navigation">
+            <span class="text-sm font-normal text-gray-500  mb-4 md:mb-0 block w-full md:inline md:w-auto">
+                Total de empresas encontradas: <b>@Model.TotalItems</b>
+            </span>
+            <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+                <li>
+                    <a asp-route-pageNumber="1"
+                        class="@(Model.PageNumber == 1 ? "disabled pointer-events-none" : "") flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700">
+                        Início
+                    </a>
+                </li>
+
+                <li>
+                    <a asp-route-pageNumber="@(Model.PageNumber - 1)"
+                        class="@(Model.HasPreviousPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                        Anterior
+                    </a>
+                </li>
+
+                @for (int i = startPage; i <= endPage; i++)
+                {
+                    <li>
+                        <a asp-route-pageNumber="@i"
+                            class="@(Model.PageNumber == @i ? "disabled pointer-events-none" : "") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                            @i
+                        </a>
+                    </li>
+                }
+
+                <li>
+                    <a asp-route-pageNumber="@(Model.PageNumber + 1)"
+                        class="@(Model.HasNextPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                        Próxima
+                    </a>
+                </li>
+
+                <li>
+                    <a asp-route-pageNumber="@endPage"
+                        class="@(Model.HasNextPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700">
+                        Final
+                    </a>
+                </li>
+            </ul>
+        </nav>
 </section>

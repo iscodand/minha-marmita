@@ -8,5 +8,5 @@ function formatCNPJ(input) {
     cnpj = cnpj.replace(/\.(\d{3})(\d)/, ".$1/$2");
     cnpj = cnpj.replace(/(\d{4})(\d)/, "$1-$2");
 
-    input.value = cnpj;
+    input.value = cnpj; 
 }

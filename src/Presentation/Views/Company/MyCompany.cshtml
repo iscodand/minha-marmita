@@ -1,7 +1,6 @@
 @using Presentation.ViewModels.Company;
 @model CompanyViewModel;
 
-
 @{
     var company = Model.Company;
     var data = Model.Data;
@@ -24,18 +23,6 @@
 <script src="~/js/utils/pagination.js"></script>
 <script src="~/js/charts/doughnutChart.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<div class="mb-8 flex">
-    <a asp-controller="Company" asp-action="GetCompanies"
-        class="flex gap-2 shadow bg-blue-700 hover:bg-blue-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="fill-white mt-1">
-            <path
-                d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
-        </svg>
-
-        Voltar
-    </a>
-</div>
 
 <div class="mb-6">
     <button class="focus:outline-none text-white bg-green-400 font-medium rounded-lg px-5 py-0.5 me-2 mb-2">
@@ -233,49 +220,15 @@
     </div>
 </div>
 
-<div class="bg-white p-4 shadow rounded-lg">
-    <div class="flex gap-5">
-        <div>
-            <form>
-                <button
-                    class="flex shadow bg-yellow-500 hover:bg-yellow-600 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
-                    type="submit">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="mt-1 mr-3 fill-white">
-                        <path
-                            d="M367.2 412.5L99.5 144.8C77.1 176.1 64 214.5 64 256c0 106 86 192 192 192c41.5 0 79.9-13.1 111.2-35.5zm45.3-45.3C434.9 335.9 448 297.5 448 256c0-106-86-192-192-192c-41.5 0-79.9 13.1-111.2 35.5L412.5 367.2zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z" />
-                    </svg>
-                    Desativar Empresa
-                </button>
-            </form>
-        </div>
-
-        <div>
-            @if (!company.Employees.Any())
-            {
-
-                <form asp-controller="Company" asp-action="Delete" asp-route-id="@company.Id">
-                    <button
-                        class="flex shadow bg-red-500 hover:bg-red-900 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
-                        type="submit">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="mt-1 mr-3 fill-white">
-                            <path
-                                d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z" />
-                        </svg>
-                        Deletar Empresa
-                    </button>
-                </form>
-            }
-        </div>
-    </div>
-</div>
-
 <script>
+    console.log(@Json.Serialize(data.Meals));
     const mealsJsonData = @Json.Serialize(data.Meals);
     const mealsLabels = mealsJsonData.map(item => item.description);
     const mealsData = mealsJsonData.map(item => item.ordersCount);
     generateDoughnutChart("meals-chart", mealsData, mealsLabels);
 
     const customersJsonData = @Json.Serialize(data.Customers)
+        console.log(customersJsonData);
     const customersLabels = customersJsonData.map(item => item.name);
     const customersData = customersJsonData.map(item => item.ordersCount);
     generateDoughnutChart("customers-chart", customersData, customersLabels);
