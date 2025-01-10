@@ -7,6 +7,7 @@ namespace Application.DTOs.Company.Response
         public int Id { get; set; }
         public string Name { get; set; }
         public string CNPJ { get; set; }
+        public int EmployeesCount { get; set; }
 
         public static IEnumerable<CompanyDTO> Map(IEnumerable<Domain.Entities.Company> companies)
         {
@@ -14,7 +15,8 @@ namespace Application.DTOs.Company.Response
             {
                 Id = company.Id,
                 Name = company.Name,
-                CNPJ = company.CNPJ
+                CNPJ = company.CNPJ,
+                EmployeesCount = company.Users.Count
             }).ToList();
         }
     }
