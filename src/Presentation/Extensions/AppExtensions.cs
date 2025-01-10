@@ -32,7 +32,7 @@ namespace Presentation.Extensions
 
                 await Infrastructure.Identity.Seeds.DefaultRoles.SeedAsync(roleManager);
                 await Infrastructure.Identity.Seeds.DefaultCompany.SeedAsync(companyService);
-                await Infrastructure.Identity.Seeds.DefaultAdmin.SeedAsync(userManager);
+                await Infrastructure.Identity.Seeds.DefaultAdmin.SeedAsync(userManager, companyService);
             }
         }
     }

@@ -10,7 +10,7 @@ namespace Application.Wrappers
 
         public Response()
         {
-            
+
         }
 
         public Response(string message, T data, int status)
@@ -27,8 +27,27 @@ namespace Application.Wrappers
             Message = message;
             Errors = errors;
             Succeeded = false;
-            Errors = errors;
             Status = status;
+        }
+
+        public static Response<T> Failure(List<string> errors)
+        {
+            return new()
+            {
+                Message = "Ops! Ocorreu um erro ao processar a solicitação.",
+                Errors = errors,
+                Succeeded = false,
+            };
+        }
+
+        public static Response<T> Success(T data, string message)
+        {
+            return new()
+            {
+                Message = message,
+                Data = data,
+                Succeeded = true
+            };
         }
     }
 }

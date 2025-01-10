@@ -14,6 +14,15 @@ namespace Infrastructure.Data.Repositories
             _companies = context.Companies;
         }
 
+        public async Task<IEnumerable<Company>> GetCompaniesPagedAsync(int pageNumber, int pageSize)
+        {
+            return await _companies.AsNoTracking()
+                                .Include(x => x.Users)
+                                .Skip((pageNumber - 1) * pageSize)
+                                .Take(pageSize)
+                                .ToListAsync();
+        }
+
         public async Task<bool> CompanyAlreadyRegisteredByCNPJAsync(string cnpj)
         {
             return await _companies.AsNoTracking()

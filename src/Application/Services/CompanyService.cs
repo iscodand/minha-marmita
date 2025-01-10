@@ -1,8 +1,8 @@
 using Application.Contracts.Repositories;
 using Application.Contracts.Services;
-using Application.Dtos.User;
 using Application.DTOs.Company.Requests;
 using Application.DTOs.Company.Response;
+using Application.Parameters;
 using Application.Wrappers;
 using Domain.Entities;
 
@@ -23,12 +23,9 @@ namespace Application.Services
             bool companyAlreadyRegistered = await _companyRepository.CompanyAlreadyRegisteredByCNPJAsync(request.CNPJ);
             if (companyAlreadyRegistered)
             {
-                return new Response<string>()
-                {
-                    Succeeded = false,
-                    Message = "Uma empresa já está cadastrada com esse CNPJ.",
-                    Data = null
-                };
+                return Response<string>.Failure(
+                    new List<string> { "Uma empresa já está cadastrada com esse CNPJ." }
+                );
             }
 
             Company company = new()
@@ -37,14 +34,12 @@ namespace Application.Services
                 CNPJ = request.CNPJ
             };
 
-            await _companyRepository.CreateAsync(company);
+            company = await _companyRepository.CreateAsync(company);
 
-            return new Response<string>()
-            {
-                Succeeded = true,
-                Message = "Empresa cadastrada com sucesso.",
-                Data = null
-            };
+            return Response<string>.Success(
+                message: "Empresa cadastrada com sucesso.",
+                data: company.Id.ToString()
+            );
         }
 
         public async Task<Response<DetailCompanyDTO>> GetCompanyByIdAsync(int companyId)
@@ -71,17 +66,35 @@ namespace Application.Services
             };
         }
 
-        public async Task<Response<IEnumerable<CompanyDTO>>> GetCompaniesAsync()
+        public async Task<PagedResponse<IEnumerable<CompanyDTO>>> GetCompaniesAsync(RequestParameter parameter)
         {
-            IEnumerable<Company> companies = await _companyRepository.GetAllAsync();
-            IEnumerable<CompanyDTO> companyDTO = CompanyDTO.Map(companies);
+            IEnumerable<Company> companies = await _companyRepository.GetCompaniesPagedAsync(parameter.PageNumber, parameter.PageSize);
+            IEnumerable<CompanyDTO> mappedCompanies = CompanyDTO.Map(companies);
 
-            return new Response<IEnumerable<CompanyDTO>>()
+            return new PagedResponse<IEnumerable<CompanyDTO>>()
             {
                 Succeeded = true,
                 Message = "Empresas recuperadas com sucesso.",
-                Data = companyDTO
+                Data = mappedCompanies
             };
+        }
+
+        public async Task<Response<string>> DeleteAsync(int companyId)
+        {
+            Company company = await _companyRepository.GetByIdAsync(companyId);
+            if (company is null)
+            {
+                return Response<string>.Failure(
+                    errors: new List<string> { "Empresa não encontrada." }
+                );
+            }
+
+            await _companyRepository.DeleteAsync(company);
+
+            return Response<string>.Success(
+                message: "Empresa deletada com sucesso.",
+                data: string.Empty
+            );
         }
     }
 }

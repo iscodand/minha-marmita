@@ -75,10 +75,8 @@ namespace Presentation.Controllers
                     ViewData["Succeeded"] = true;
                     return RedirectToAction(nameof(Meals));
                 }
-                else
-                {
-                    return View();
-                }
+
+                return View();
             }
 
             return RedirectToAction(nameof(Meals));
@@ -151,12 +149,16 @@ namespace Presentation.Controllers
             };
 
             Response<GetMealDto> result = await _mealService.DeleteMealAsync(deleteMealDto);
+
+            ViewData["Message"] = result.Message;
+
             if (result.Succeeded)
             {
+                ViewData["Succeeded"] = true;
                 return RedirectToAction(nameof(Meals));
             }
 
-            return RedirectToAction(nameof(Meals));
+            return View();
         }
     }
 }
