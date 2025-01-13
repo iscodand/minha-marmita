@@ -7,6 +7,7 @@ using Presentation.Controllers.Common;
 using Application.DTOs.Authentication;
 using Application.Contracts.Services;
 using Application.Parameters;
+using Serilog;
 
 namespace Presentation.Controllers
 {
@@ -147,6 +148,13 @@ namespace Presentation.Controllers
 
                 Response<CreateOrderDto> result = await _orderService.CreateOrderAsync(createOrderDto);
                 ViewData["Message"] = result.Message;
+
+                Log.ForContext("Action", "Cadastrando novo pedido...")
+                            .ForContext("Request", createOrderViewModel)
+                            .ForContext("Response", result)
+                            .ForContext("UserId", authenticatedUser.Id)
+                            .ForContext("CompanyId", authenticatedUser.CompanyId)
+                            .Information("Cadastrando novo pedido...");
 
                 if (result.Succeeded)
                 {

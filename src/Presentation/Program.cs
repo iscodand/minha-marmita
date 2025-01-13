@@ -36,7 +36,7 @@ builder.Services.AddIdentitySetup();
 builder.Services.AddControllersWithViews();
 
 // Add shared services
-builder.Services.AddSharedServices();
+builder.Services.AddSharedServices(builder.Configuration);
 
 // Add session settings
 builder.Services.AddSession(options =>
