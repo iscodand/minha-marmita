@@ -27,6 +27,7 @@ namespace Infrastructure.Data
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IUserRoleRepository, UserRoleRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
+            services.AddScoped<ILoggerRepository, LoggerRepository>();
 
             return services;
         }

@@ -18,10 +18,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Controllers\" />
+		<None Include=".env" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include=".env" CopyToOutputDirectory="PreserveNewest" />
+	  <Folder Include="Views\Log\" />
 	</ItemGroup>
 </Project>
