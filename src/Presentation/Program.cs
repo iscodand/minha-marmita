@@ -1,3 +1,4 @@
+using System.Globalization;
 using Application;
 using Application.Contracts.Services;
 using Infrastructure.Data;
@@ -10,6 +11,16 @@ using Presentation.Services;
 DotEnv.Load();
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
+    options.SupportedCultures = new List<CultureInfo>
+    {
+        new("pt-BR"),
+        new("pt-BR")
+    };
+});
 
 // Configure Newtonsoft.Json to Ignore Loops
 JsonConvert.DefaultSettings = () => new JsonSerializerSettings
