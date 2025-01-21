@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Application.Dtos.Customer;
 using Application.Wrappers;
 using Presentation.ViewModels.Customer;
-using Presentation.ViewModels.Order;
-using Application.Dtos.Order;
 using Presentation.Controllers.Common;
 using Application.DTOs.Authentication;
 using Application.Contracts.Services;
