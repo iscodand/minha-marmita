@@ -12,7 +12,7 @@
     decimal totalToPay = data.Orders.Where(x => !x.IsPaid).Select(x => x.Price).Sum();
 }
 
-<script src="~/js/charts/doughnutChart.js"></script>
+@* <script src="~/js/charts/doughnutChart.js"></script> *@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 @functions {
