@@ -25,15 +25,15 @@ services:
     ports:
       - "1433:1433"
 
-  nginx:
-    container_name: reverse
-    hostname: reverse
-    image: nginx
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - <caminho/para/seu/config>:/etc/nginx
+  # nginx:
+  #   container_name: reverse
+  #   hostname: reverse
+  #   image: nginx
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #   volumes:
+  #     - <caminho/para/seu/config>:/etc/nginx
 
 volumes:
   dev-db-data:
