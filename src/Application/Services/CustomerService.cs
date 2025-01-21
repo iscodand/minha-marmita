@@ -5,7 +5,6 @@ using Domain.Entities;
 using Application.Contracts.Repositories;
 using Application.Contracts.Services;
 using Application.Parameters;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Application.Services
 {
@@ -20,22 +19,14 @@ namespace Application.Services
 
         public async Task<Response<CreateCustomerDto>> CreateCustomerAsync(CreateCustomerDto createCustomerDto)
         {
-            if (createCustomerDto == null)
-            {
-                return new Response<CreateCustomerDto>()
-                {
-                    Message = "Cliente não pode ser nulo.",
-                    Succeeded = false
-                };
-            }
-
             if (await _customerRepository.CustomerExistsByCompanyAsync(createCustomerDto.Name, createCustomerDto.CompanyId))
             {
-                return new Response<CreateCustomerDto>()
-                {
-                    Message = "Um cliente com esse nome já foi cadastrado. Verifique e tente novamente",
-                    Succeeded = false
-                };
+                return Response<CreateCustomerDto>.Failure(
+                    errors: new List<string>
+                    {
+                        "Um cliente com esse nome já foi cadastrado. Verifique e tente novamente"
+                    }
+                );
             }
 
             Customer customer = Customer.Create(
@@ -47,11 +38,10 @@ namespace Application.Services
 
             await _customerRepository.CreateAsync(customer);
 
-            return new Response<CreateCustomerDto>()
-            {
-                Message = "Cliente criado com sucesso",
-                Succeeded = true
-            };
+            return Response<CreateCustomerDto>.Success(
+                data: createCustomerDto,
+                message: "Cliente cadastrado com sucesso."
+            );
         }
 
         public async Task<Response<IEnumerable<GetCustomerDto>>> SearchByCustomerAsync(string name)
@@ -60,12 +50,10 @@ namespace Application.Services
 
             IEnumerable<GetCustomerDto> mappedCustomers = GetCustomerDto.Map(customers);
 
-            return new Response<IEnumerable<GetCustomerDto>>()
-            {
-                Data = mappedCustomers,
-                Message = "Clientes recuperados com sucesso.",
-                Succeeded = true
-            };
+            return Response<IEnumerable<GetCustomerDto>>.Success(
+                data: mappedCustomers,
+                message: "Clientes recuperados com sucesso."
+            );
         }
 
         public async Task<Response<UpdateCustomerDto>> UpdateCustomerAsync(UpdateCustomerDto updateCustomerDto)
@@ -143,6 +131,7 @@ namespace Application.Services
                 parameter.PageNumber,
                 parameter.PageSize
             );
+
             IEnumerable<GetCustomerDto> mappedCustomers = GetCustomerDto.Map(customers.customers);
 
             return new(
