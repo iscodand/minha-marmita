@@ -18,6 +18,8 @@ namespace Infrastructure.Data.DataContext
         public DbSet<PaymentType> PaymentTypes { get; set; }
         public DbSet<Company> Companies { get; set; }
 
+        public DbSet<ApplicationLog> ApplicationLogs { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

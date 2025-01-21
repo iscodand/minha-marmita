@@ -1,0 +1,94 @@
+@using Application.Wrappers;
+@using Application.DTOs.Log;
+@model PagedResponse<IEnumerable<GetLogDto>>;
+
+@{
+    var logs = Model.Data;
+    ViewData["Title"] = "Funcionários";
+    Layout = "_Layout";
+}
+
+
+<section>
+    <h1 class="text-3xl font-bold mb-6">Auditoria de Ações</h1>
+
+    <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
+        <div class="bg-white p-4 shadow rounded-lg">
+            <div class="flex justify-between items-center">
+
+                <div>
+                    <label for="table-search" class="sr-only">Search</label>
+                    <div class="relative">
+                        <div
+                            class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                            </svg>
+                        </div>
+                        <input type="text"
+                            class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Buscar por palavra-chave">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <div class="relative overflow-x-auto">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 rounded-s-lg">
+                                Ação
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Horário
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Usuário
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Empresa
+                            </th>
+                        </tr>
+                    </thead>
+
+                    @if (!logs.Any())
+                    {
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="text-center p-6">
+                                    <p class="text-gray-500 text-lg mt-4">Nenhum registro encontrado</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    }
+                    else
+                    {
+                        <tbody>
+                            @foreach (var log in logs)
+                            {
+                                <tr class="bg-white">
+                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                        @log.Action
+                                    </th>
+                                    <td class="px-6 py-4">
+                                        @log.TimeStamp
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @log.UserId
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @log.CompanyId
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
