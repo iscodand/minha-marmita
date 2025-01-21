@@ -17,8 +17,8 @@ namespace Infrastructure.Shared
             #region Serilog Settings
 
             // string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            string connectionString = configuration.GetConnectionString("DefaultConnection");
-            const string tableName = "LOGS";
+            // string connectionString = configuration.GetConnectionString("DefaultConnection");
+            // const string tableName = "LOGS";
 
             ColumnOptions columnOptions = new()
             {
@@ -29,17 +29,17 @@ namespace Infrastructure.Shared
                 }
             };
 
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .WriteTo.MSSqlServer(
-                    connectionString: connectionString,
-                    sinkOptions: new()
-                    {
-                        AutoCreateSqlTable = true,
-                        TableName = tableName
-                    },
-                    columnOptions: columnOptions
-                ).CreateLogger();
+            // Log.Logger = new LoggerConfiguration()
+            //     .MinimumLevel.Information()
+            //     .WriteTo.MSSqlServer(
+            //         connectionString: connectionString,
+            //         sinkOptions: new()
+            //         {
+            //             AutoCreateSqlTable = false,
+            //             TableName = tableName
+            //         },
+            //         columnOptions: columnOptions
+            //     ).CreateLogger();
 
             #endregion
 

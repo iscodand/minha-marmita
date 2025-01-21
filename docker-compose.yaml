@@ -1,10 +1,12 @@
 version: '3.9'
 
 services:
-  soraya-management:
-    container_name: soraya-management
+  minha-marmita:
+    container_name: minha-marmita 
     build:
       dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - "8080:8080"
     depends_on:
