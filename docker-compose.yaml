@@ -1,22 +1,23 @@
-version: '3.9'
+# version: '3.9'
 
 services:
   minha-marmita:
-    container_name: minha-marmita 
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: iscodand/minha-marmita:1.0
+    container_name: minha-marmita
+    # build:
+    #   context: . 
+    #   dockerfile: Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - "8080:80"
     depends_on:
-      - mssql-database
+      - sql-server
 
-  mssql-database:
+  sql-server:
     image: mcr.microsoft.com/mssql/server:2022-latest
     user: root
-    container_name: mssql-database
+    container_name: sql-server
     volumes:
       - dev-db-data:/var/opt/mssql/data
     environment:

@@ -4,6 +4,7 @@ using Application.Contracts.Services;
 using Infrastructure.Data;
 using Infrastructure.Identity;
 using Infrastructure.Shared;
+using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Newtonsoft.Json;
 using Presentation.Extensions;
 using Presentation.Services;
@@ -21,6 +22,8 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
         new("pt-BR")
     };
 });
+
+Console.WriteLine(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 // Configure Newtonsoft.Json to Ignore Loops
 JsonConvert.DefaultSettings = () => new JsonSerializerSettings
@@ -59,6 +62,8 @@ builder.Services.AddSession(options =>
 
 WebApplication app = builder.Build();
 
+// StaticWebAssetsLoader.UseStaticWebAssets(app.Environment, app.Configuration);
+
 try
 {
     app.ApplyMigrations();
@@ -79,6 +84,8 @@ if (!app.Environment.IsDevelopment())
 // app.UseHttpsRedirection();
 
 app.UseSession();
+
+app.UseDefaultFiles();
 
 app.UseStaticFiles();
 
