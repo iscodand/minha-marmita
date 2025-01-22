@@ -4,7 +4,7 @@ name: Deploy em Development
 on:
   push:
     branches:
-      - development
+      - master
 
 permissions:
   contents: write
