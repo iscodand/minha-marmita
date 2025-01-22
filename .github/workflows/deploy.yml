@@ -1,14 +1,14 @@
 name: Deploy em Development
 
-on:
-  pull_request:
-    types:
-      - closed
-    branches:
-      - master
-  push:
-    branches:
-      - master
+on: [ push ]
+#  pull_request:
+#    types:
+#      - closed
+#    branches:
+#      - master
+#  push:
+#    branches:
+#      - master
 
 permissions:
   contents: write
