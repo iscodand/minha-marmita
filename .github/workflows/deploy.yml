@@ -1,0 +1,48 @@
+name: Deploy em Development
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout do código
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Obtenha os primeiros 7 caracteres do hash do commit
+      - name: Get short commit hash
+        id: vars
+        run: echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+
+      # Login no Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_SECRET_USER }}
+          password: ${{ secrets.DOCKERHUB_SECRET_PWD }}
+
+      # Build da imagem
+      - name: Build and push Docker image
+        run: |
+          IMAGE_NAME=minha-marmita
+          docker build -t $IMAGE_NAME:${{ env.COMMIT_HASH }} .
+          docker tag $IMAGE_NAME:${{ env.COMMIT_HASH }} iscodand/$IMAGE_NAME:${{ env.COMMIT_HASH }}
+          docker push iscodand/$IMAGE_NAME:${{ env.COMMIT_HASH }}
+
+      # Opcional: Notificação de sucesso
+      - name: Notify deployment success
+        run: echo "Deployment successful with commit ${{ env.COMMIT_HASH }}"
