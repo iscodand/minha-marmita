@@ -2,7 +2,7 @@
 
 services:
   minha-marmita:
-    image: iscodand/minha-marmita:1.0
+    image: iscodand/minha-marmita:${IMAGE_VERSION}
     container_name: minha-marmita
     # build:
     #   context: . 
