@@ -48,7 +48,7 @@ jobs:
             docker login -u ${{ secrets.DOCKERHUB_SECRET_USER }} -p ${{ secrets.DOCKERHUB_SECRET_PWD }}
             docker pull iscodand/minha-marmita:${{ env.COMMIT_HASH }}
             cd ../projects/soraya-management
-            docker-compose up -d --build
+            docker run --env ASPNETCORE_ENVIRONMENT=Development --name minha-marmita -d iscodand/minha-marmita:${{ env.COMMIT_HASH }}
 
       # 5. Notificação de sucesso
       - name: Notify deployment success
