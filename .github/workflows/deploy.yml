@@ -49,6 +49,10 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
+            echo "Updating IMAGE_VERSION on VPS: ${{ env.COMMIT_HASH }}"
+            echo "export IMAGE_VERSION=${{ env.COMMIT_HASH }}" > /etc/profile.d/image_version.sh
+            source /etc/profile.d/image_version.sh
+            echo "IMAGE_VERSION is now set to: $IMAGE_VERSION"
             IMAGE_VERSION=${{ env.COMMIT_HASH }}
             docker login -u ${{ secrets.DOCKERHUB_SECRET_USER }} -p ${{ secrets.DOCKERHUB_SECRET_PWD }}
             docker pull iscodand/minha-marmita:${{ env.COMMIT_HASH }}
