@@ -38,7 +38,6 @@ jobs:
           docker tag $IMAGE_NAME:${{ env.COMMIT_HASH }} iscodand/$IMAGE_NAME:${{ env.COMMIT_HASH }}
           docker push iscodand/$IMAGE_NAME:${{ env.COMMIT_HASH }}
 
-<<<<<<< HEAD
       - name: Deploy to VPS
         uses: appleboy/ssh-action@master
         with:
@@ -51,8 +50,6 @@ jobs:
             cd soraya-management
             docker-compose up -d --build
 
-=======
->>>>>>> be5843da44e6619854471126b9eb981af7e7d2a0
       # 5. Notificação de sucesso
       - name: Notify deployment success
         run: echo "Deployment successful with commit ${{ env.COMMIT_HASH }}"
