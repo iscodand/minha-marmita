@@ -49,12 +49,13 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
+            IMAGE_VERSION=${{ env.COMMIT_HASH }}
             docker login -u ${{ secrets.DOCKERHUB_SECRET_USER }} -p ${{ secrets.DOCKERHUB_SECRET_PWD }}
             docker pull iscodand/minha-marmita:${{ env.COMMIT_HASH }}
             cd ../projects/soraya-management
             docker rm -f minha-marmita
             docker rmi minha-marmita:${{ env.PENULTIMATE_COMMIT_HASH }}
-            docker run --env ASPNETCORE_ENVIRONMENT=Development -p 8080:80 --name minha-marmita -d iscodand/minha-marmita:${{ env.COMMIT_HASH }}
+            docker-compose up -d --build
 
       # 5. Notificação de sucesso
       - name: Notify deployment success
