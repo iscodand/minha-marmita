@@ -45,6 +45,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
+            docker login -u ${{ secrets.DOCKERHUB_SECRET_USER }} -p ${{ secrets.DOCKERHUB_SECRET_PWD }}
             docker pull iscodand/minha-marmita:${{ env.COMMIT_HASH }}
             cd projects
             cd soraya-management
