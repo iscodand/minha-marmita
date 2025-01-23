@@ -47,8 +47,7 @@ jobs:
           script: |
             docker login -u ${{ secrets.DOCKERHUB_SECRET_USER }} -p ${{ secrets.DOCKERHUB_SECRET_PWD }}
             docker pull iscodand/minha-marmita:${{ env.COMMIT_HASH }}
-            cd projects
-            cd soraya-management
+            cd ../projects/soraya-management
             docker-compose up -d --build
 
       # 5. Notificação de sucesso
