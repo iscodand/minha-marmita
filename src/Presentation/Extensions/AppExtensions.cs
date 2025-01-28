@@ -30,8 +30,8 @@ namespace Presentation.Extensions
                     .ServiceProvider
                     .GetService(typeof(RoleManager<Role>));
 
-                await Infrastructure.Identity.Seeds.DefaultRoles.SeedAsync(roleManager);
                 await Infrastructure.Identity.Seeds.DefaultCompany.SeedAsync(companyService);
+                await Infrastructure.Identity.Seeds.DefaultRoles.SeedAsync(roleManager);
                 await Infrastructure.Identity.Seeds.DefaultAdmin.SeedAsync(userManager, companyService);
             }
         }

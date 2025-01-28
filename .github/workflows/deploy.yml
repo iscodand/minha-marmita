@@ -1,0 +1,66 @@
+name: Deploy em Development
+
+# Este workflow é acionado em push na branch "main" ou "development".
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout do código
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Obtenha os primeiros 7 caracteres do hash do commit
+      - name: Get short commit hash
+        id: vars
+        run: echo "COMMIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+
+      - name: Get penultimate commit hash
+        id: penultimate_commit
+        run: echo "PENULTIMATE_COMMIT_HASH=$(git rev-parse --short=7 HEAD~1)" >> $GITHUB_ENV
+
+      # 3. Login no Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_SECRET_USER }}
+          password: ${{ secrets.DOCKERHUB_SECRET_PWD }}
+
+      # 4. Build e push da imagem Docker
+      - name: Build and push Docker image
+        run: |
+          IMAGE_NAME=minha-marmita
+          docker build -t $IMAGE_NAME:${{ env.COMMIT_HASH }} .
+          docker tag $IMAGE_NAME:${{ env.COMMIT_HASH }} iscodand/$IMAGE_NAME:${{ env.COMMIT_HASH }}
+          docker push iscodand/$IMAGE_NAME:${{ env.COMMIT_HASH }}
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            echo "Updating IMAGE_VERSION on VPS: ${{ env.COMMIT_HASH }}"
+            echo "export IMAGE_VERSION=${{ env.COMMIT_HASH }}" > /etc/profile.d/image_version.sh
+            source /etc/profile.d/image_version.sh
+            echo "IMAGE_VERSION is now set to: $IMAGE_VERSION"
+            IMAGE_VERSION=${{ env.COMMIT_HASH }}
+            docker login -u ${{ secrets.DOCKERHUB_SECRET_USER }} -p ${{ secrets.DOCKERHUB_SECRET_PWD }}
+            docker pull iscodand/minha-marmita:${{ env.COMMIT_HASH }}
+            cd ../projects/soraya-management
+            docker rm -f minha-marmita
+            docker rmi minha-marmita:${{ env.PENULTIMATE_COMMIT_HASH }}
+            docker-compose up -d --build
+
+      # 5. Notificação de sucesso
+      - name: Notify deployment success
+        run: echo "Deployment successful with commit ${{ env.COMMIT_HASH }}"

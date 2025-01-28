@@ -1,19 +1,23 @@
-version: '3.9'
+# version: '3.9'
 
 services:
-  soraya-management:
-    container_name: soraya-management
-    build:
-      dockerfile: Dockerfile
+  minha-marmita:
+    image: iscodand/minha-marmita:${IMAGE_VERSION}
+    container_name: minha-marmita
+    # build:
+    #   context: . 
+    #   dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
-      - "8080:8080"
+      - "8080:80"
     depends_on:
-      - mssql-database
+      - sql-server
 
-  mssql-database:
+  sql-server:
     image: mcr.microsoft.com/mssql/server:2022-latest
     user: root
-    container_name: mssql-database
+    container_name: sql-server
     volumes:
       - dev-db-data:/var/opt/mssql/data
     environment:
@@ -21,6 +25,16 @@ services:
       - SA_PASSWORD=Testing123!
     ports:
       - "1433:1433"
+
+  # nginx:
+  #   container_name: reverse
+  #   hostname: reverse
+  #   image: nginx
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #   volumes:
+  #     - <caminho/para/seu/config>:/etc/nginx
 
 volumes:
   dev-db-data:
