@@ -55,6 +55,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost("recuperar-senha/")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel viewModel)
         {
             if (ModelState.IsValid)
