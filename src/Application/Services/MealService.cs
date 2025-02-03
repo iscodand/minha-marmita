@@ -41,12 +41,22 @@ namespace Application.Services
 
             var mappedMeal = GetMealDto.Map(meal);
 
-            return new Response<GetMealDto>()
-            {
-                Message = "Sabor encontrado com sucesso",
-                Succeeded = true,
-                Data = mappedMeal
-            };
+            return Response<GetMealDto>.Success(
+                message: "Sabor encontrado com sucesso",
+                data: mappedMeal
+            );
+        }
+
+        public async Task<Response<IEnumerable<GetMealDto>>> GetByUserIdAsync(string userId)
+        {
+            var meals = await _mealRepository.GetByCreatedByIdAsync(userId);
+            var mappedMeals = GetMealDto.Map(meals);
+
+            return new Response<IEnumerable<GetMealDto>>(
+                message: "Sabores recuperados com sucesso.",
+                data: mappedMeals,
+                status: 200
+            );
         }
 
         public async Task<Response<IEnumerable<GetMealDto>>> SearchByMealAsync(string name)

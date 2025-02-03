@@ -82,5 +82,13 @@ namespace Infrastructure.Data.Repositories
                                .AnyAsync(x => x.Description == description)
                                .ConfigureAwait(false);
         }
+
+        public async Task<IEnumerable<Meal>> GetByCreatedByIdAsync(string createdById)
+        {
+            return await _meals.AsNoTracking()
+                            .Where(x => x.UserId == createdById)
+                            .ToListAsync()
+                            .ConfigureAwait(false);
+        }
     }
 }

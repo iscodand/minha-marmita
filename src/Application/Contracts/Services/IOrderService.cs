@@ -11,6 +11,7 @@ namespace Application.Contracts.Services
                 public Task<PagedResponse<IEnumerable<GetOrderDto>>> GetOrdersByDateRangePagedAsync(int companyId, RequestParameter parameter);
                 public Task<Response<IEnumerable<GetOrderDto>>> GetOrdersByDateRangeAsync(int companyId, DateTime? initialDate, DateTime? finalDate);
                 public Task<Response<DetailOrderDto>> GetOrderDetailsAsync(int orderId, int userCompanyId);
+                public Task<Response<IEnumerable<GetOrderDto>>> GetByUserIdAsync(string userId);
                 public Task<Response<CreateOrderDto>> CreateOrderAsync(CreateOrderDto createOrderDto);
                 public Task<Response<GetCreateOrderItemsDto>> GetCreateOrdersItemsAsync(int companyId);
                 public Task<Response<UpdateOrderDto>> UpdateOrderAsync(UpdateOrderDto updateOrderDto);

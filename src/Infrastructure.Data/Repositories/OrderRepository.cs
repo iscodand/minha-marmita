@@ -91,5 +91,15 @@ namespace Infrastructure.Data.Repositories
                                 .ToListAsync()
                                 .ConfigureAwait(false);
         }
+
+        public async Task<ICollection<Order>> GetLastOrdersByUserAsync(string userId)
+        {
+            return await _orders.AsNoTracking()
+                            .Include(x => x.Customer)
+                            .Include(x => x.Meal)
+                            .Include(x => x.PaymentType)
+                            .Where(x => x.UserId == userId)
+                            .ToListAsync();
+        }
     }
 }
