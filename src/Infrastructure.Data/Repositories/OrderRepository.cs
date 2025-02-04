@@ -99,6 +99,8 @@ namespace Infrastructure.Data.Repositories
                             .Include(x => x.Meal)
                             .Include(x => x.PaymentType)
                             .Where(x => x.UserId == userId)
+                            .Take(10)
+                            .OrderByDescending(x => x.CreatedAt)
                             .ToListAsync();
         }
     }
