@@ -5,6 +5,7 @@ using Application.Contracts.Repositories;
 using Infrastructure.Data.Repositories;
 using Application.Contracts.Services;
 using Application.Parameters;
+using Application.Dtos.User;
 
 namespace Application.Services
 {
@@ -107,6 +108,17 @@ namespace Application.Services
                 Message = $"Pedido N° {updateOrderDto.OrderId} atualizado com sucesso.",
                 Succeeded = true
             };
+        }
+
+        public async Task<Response<IEnumerable<GetOrderDto>>> GetByUserIdAsync(string userId)
+        {
+            var orders = await _orderRepository.GetLastOrdersByUserAsync(userId);
+            var mappedOrders = GetOrderDto.Map(orders);
+
+            return Response<IEnumerable<GetOrderDto>>.Success(
+                data: mappedOrders,
+                message: "Pedidos encontrados com sucesso."
+            );
         }
 
         public async Task<Response<DetailOrderDto>> GetOrderDetailsAsync(int orderId, int userCompanyId)

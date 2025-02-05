@@ -5,7 +5,7 @@ using Domain.Entities;
 
 namespace Infrastructure.Data.DataContext
 {
-    public class ApplicationDbContext : IdentityDbContext<User, Role, string>
+    public class ApplicationDbContext : IdentityDbContext<User, Role, string, IdentityUserClaim<string>, UserRole, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
@@ -46,9 +46,21 @@ namespace Infrastructure.Data.DataContext
                 entity.ToTable(name: "ROLES");
             });
 
-            builder.Entity<IdentityUserRole<string>>(entity =>
+            builder.Entity<UserRole>(entity =>
             {
                 entity.ToTable(name: "USER_ROLES");
+
+                entity.HasKey(ur => new { ur.UserId, ur.RoleId });
+
+                entity.HasOne(ur => ur.User)
+                      .WithMany(u => u.UserRoles)
+                      .HasForeignKey(ur => ur.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(ur => ur.Role)
+                      .WithMany(r => r.UserRoles)
+                      .HasForeignKey(ur => ur.RoleId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<IdentityUserClaim<string>>(entity =>

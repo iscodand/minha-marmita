@@ -127,7 +127,7 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [Route("{employeeUsername}")]
-        public async Task<IActionResult> UpdateEmployee(string employeeUsername, UpdateUserViewModel updateUserViewModel)
+        public async Task<IActionResult> UpdateEmployee(string employeeUsername, UpdateUserViewModel updateUserViewModel, [FromQuery] string afterRoute = "employees")
         {
             if (ModelState.IsValid)
             {
@@ -138,6 +138,7 @@ namespace Presentation.Controllers
                     Name = updateUserViewModel.Name,
                     Username = employeeUsername,
                     Email = updateUserViewModel.Email,
+                    PhoneNumber = updateUserViewModel.PhoneNumber,
                     CompanyId = authenticatedUser.CompanyId
                 };
 
@@ -146,14 +147,13 @@ namespace Presentation.Controllers
                 ViewData["Message"] = result.Message;
                 ViewData["Succeeded"] = result.Succeeded;
 
-                if (result.Succeeded)
-                {
-                    return RedirectToAction(nameof(Employees));
-                }
+
+                return View(updateUserViewModel);
             }
 
             return View(updateUserViewModel);
         }
+
 
         [HttpPatch]
         [Route("ativar/{employeeUsername}")]

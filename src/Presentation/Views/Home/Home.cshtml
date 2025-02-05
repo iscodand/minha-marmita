@@ -26,7 +26,7 @@
     <div class="flex mb-6 justify-between">
         <h1 class="text-3xl font-bold">Dashboard de Vendas</h1>
     </div>
-    
+
     <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-6">
         <div class="flex justify-between bg-white p-4 shadow rounded-lg">
 
@@ -157,8 +157,9 @@
                     <h2 class="text-xl font-bold mb-4">Últimos Pedidos</h2>
                 </div>
                 <a asp-controller="Order" asp-action="Orders"
-                    class="mb-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Ver mais pedidos
-                    >>></a>
+                    class="mb-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                    Ver mais pedidos >>>
+                </a>
             </div>
 
             <div class="relative overflow-x-auto">
@@ -191,9 +192,9 @@
                         <tbody>
                             <tr>
                                 <td colspan="7" class="text-center p-6">
-                                    @* <img src="https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif"
-                                alt="Nenhum pedido" class="w-64 h-64 mx-auto"> *@
-                                    <p class="text-gray-500 text-lg mt-4">Nenhum pedido encontrado.</p>
+                                    <p class="text-gray-500 text-lg mt-4">
+                                        Nenhum pedido encontrado.
+                                    </p>
                                 </td>
                             </tr>
                         </tbody>

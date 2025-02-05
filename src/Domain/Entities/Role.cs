@@ -5,6 +5,7 @@ namespace Domain.Entities
     public class Role : IdentityRole<string>
     {
         public string Description { get; set; }
+        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
         public static Role Create(string name, string description)
         {

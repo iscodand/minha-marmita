@@ -11,5 +11,6 @@ namespace Infrastructure.Data.Repositories
         public Task<IEnumerable<Meal>> SearchByMealAsync(string name);
         public Task<bool> MealExistsByDescriptionAsync(string description, int companyId);
         public Task<Meal> DetailMealAsync(int mealId);
+        public Task<IEnumerable<Meal>> GetByCreatedByIdAsync(string createdById);
     }
 }

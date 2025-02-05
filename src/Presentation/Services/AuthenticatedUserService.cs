@@ -31,7 +31,9 @@ namespace Presentation.Services
                 Id = authenticatedUser.Id,
                 Name = authenticatedUser.Name,
                 Email = authenticatedUser.Email,
-                Username = authenticatedUser.Name,
+                Username = authenticatedUser.UserName,
+                PhoneNumber = authenticatedUser.PhoneNumber,
+                Role = authenticatedUser.UserRoles.Select(x => x.Role.Name).FirstOrDefault(),
                 CompanyName = authenticatedUser.UserCompany.Name,
                 CompanyId = authenticatedUser.CompanyId
             };
