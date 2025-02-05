@@ -138,6 +138,7 @@ namespace Presentation.Controllers
                     Name = updateUserViewModel.Name,
                     Username = employeeUsername,
                     Email = updateUserViewModel.Email,
+                    PhoneNumber = updateUserViewModel.PhoneNumber,
                     CompanyId = authenticatedUser.CompanyId
                 };
 
@@ -146,21 +147,13 @@ namespace Presentation.Controllers
                 ViewData["Message"] = result.Message;
                 ViewData["Succeeded"] = result.Succeeded;
 
-                if (afterRoute == "employees")
-                {
-                    return View(updateUserViewModel);
-                }
 
-                return RedirectToAction("MyProfile", "Home");
+                return View(updateUserViewModel);
             }
 
-            if (afterRoute == "employees")
-            {
-                return View(nameof(Employees));
-            }
-
-            return RedirectToAction("MyProfile", "Home");
+            return View(updateUserViewModel);
         }
+
 
         [HttpPatch]
         [Route("ativar/{employeeUsername}")]
