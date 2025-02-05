@@ -123,5 +123,36 @@ namespace Presentation.Controllers
 
             return RedirectToAction(nameof(MyProfile));
         }
+
+        [HttpPost]
+        [Route("meu-perfil/atualizar")]
+        public async Task<IActionResult> UpdateMyProfile(UpdateUserViewModel request)
+        {
+            if (ModelState.IsValid)
+            {
+                GetAuthenticatedUserDto authenticatedUser = SessionService.RetrieveUserSession();
+
+                UpdateUserDto updateUserDto = new()
+                {
+                    Name = request.Name,
+                    Username = request.Username,
+                    Email = request.Email,
+                    PhoneNumber = request.PhoneNumber,
+                    CompanyId = authenticatedUser.CompanyId
+                };
+
+                Response<UpdateUserDto> result = await _userService.UpdateUserAsync(updateUserDto);
+
+                TempData["Message"] = result.Message;
+                TempData["Succeeded"] = result.Succeeded;
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(MyProfile));
+                }
+            }
+
+            return RedirectToAction(nameof(MyProfile));
+        }
     }
 }
