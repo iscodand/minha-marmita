@@ -138,6 +138,7 @@ namespace Presentation.Controllers
                     Name = updateUserViewModel.Name,
                     Username = employeeUsername,
                     Email = updateUserViewModel.Email,
+                    PhoneNumber = updateUserViewModel.PhoneNumber,
                     CompanyId = authenticatedUser.CompanyId
                 };
 
@@ -146,9 +147,16 @@ namespace Presentation.Controllers
                 ViewData["Message"] = result.Message;
                 ViewData["Succeeded"] = result.Succeeded;
 
+                Console.WriteLine(result.Message);
+
                 if (result.Succeeded)
                 {
-                    return RedirectToAction(nameof(Employees));
+                    if (afterRoute == "employees")
+                    {
+                        return View(updateUserViewModel);
+                    }
+
+                    return RedirectToAction("MyProfile", "Home");
                 }
             }
 

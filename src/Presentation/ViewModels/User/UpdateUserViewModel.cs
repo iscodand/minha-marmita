@@ -14,5 +14,7 @@ namespace Presentation.ViewModels.User
         
         [Required(ErrorMessage = "Seu e-mail é obrigatório")]
         public string Email { get; set; }  
+
+        public string PhoneNumber { get; set; }  
     }
 }
