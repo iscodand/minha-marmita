@@ -147,28 +147,13 @@ namespace Presentation.Controllers
                 ViewData["Message"] = result.Message;
                 ViewData["Succeeded"] = result.Succeeded;
 
-                if (afterRoute == "employees")
-                {
-                    if (afterRoute == "employees")
-                    {
-                        return View(updateUserViewModel);
-                    }
 
-                    return RedirectToAction("MyProfile", "Home");
-                }
-                    return View(updateUserViewModel);
-                }
-
-                return RedirectToAction("MyProfile", "Home");
+                return View(updateUserViewModel);
             }
 
-            if (afterRoute == "employees")
-            {
-                return View(nameof(Employees));
-            }
-
-            return RedirectToAction("MyProfile", "Home");
+            return View(updateUserViewModel);
         }
+
 
         [HttpPatch]
         [Route("ativar/{employeeUsername}")]

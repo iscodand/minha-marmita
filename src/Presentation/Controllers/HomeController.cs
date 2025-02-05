@@ -1,6 +1,8 @@
 using Application.Contracts.Services;
 using Application.Dtos.Data;
+using Application.Dtos.User;
 using Application.DTOs.Authentication;
+using Application.Wrappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Controllers.Common;
@@ -99,14 +101,9 @@ namespace Presentation.Controllers
 
                 TempData["Message"] = result.Message;
                 TempData["Succeeded"] = result.Succeeded;
-
-                if (result.Succeeded)
-                {
-                    return RedirectToAction(nameof(MyProfile));
-                }
             }
 
-            return RedirectToAction(nameof(MyProfile));
+            return View(nameof(MyProfile));
         }
     }
 }
