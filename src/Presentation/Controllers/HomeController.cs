@@ -103,7 +103,7 @@ namespace Presentation.Controllers
                 TempData["Succeeded"] = result.Succeeded;
             }
 
-            return View(nameof(MyProfile));
+            return RedirectToAction(nameof(MyProfile));
         }
     }
 }

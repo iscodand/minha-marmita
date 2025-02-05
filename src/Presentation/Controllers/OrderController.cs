@@ -32,7 +32,7 @@ namespace Presentation.Controllers
             RequestParameter parameters = new()
             {
                 PageNumber = pageNumber,
-                PageSize = 1,
+                PageSize = 10,
                 InitialDate = initialDate,
                 FinalDate = initialDate
             };
