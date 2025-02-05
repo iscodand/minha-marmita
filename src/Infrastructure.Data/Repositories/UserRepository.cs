@@ -27,6 +27,8 @@ namespace Infrastructure.Data.Repositories
         {
             return await _users.AsNoTracking()
                                .Include(x => x.UserCompany)
+                               .Include(x => x.UserRoles)
+                               .ThenInclude(x => x.Role)
                                .FirstOrDefaultAsync(x => x.NormalizedUserName == username.Trim().ToUpper())
                                .ConfigureAwait(false);
         }

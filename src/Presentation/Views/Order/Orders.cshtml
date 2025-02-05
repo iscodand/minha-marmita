@@ -5,6 +5,8 @@
     ViewData["Title"] = "Pedidos";
     Layout = "_Layout";
 
+    string dateTime = string.IsNullOrEmpty(Context.Request.Query["date"]) ? DateTime.Now.Date.ToString("yyyy-MM-dd") : Context.Request.Query["date"];
+
     int totalOrders = orders.Count();
 
     decimal total = orders.Select(x => x.Price).Sum();
@@ -103,7 +105,7 @@
                     </a>
                 </div>
 
-                <form>
+                <form method="get">
                     <div class="flex gap-3">
                         <div class="relative max-w-sm">
                             <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
@@ -113,29 +115,35 @@
                                         d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
                                 </svg>
                             </div>
-                            <input datepicker id="default-datepicker" datepicker datepicker-format="dd/mm/yyyy"
-                                type="text"
+                            <input type="date" name="date" onchange="this.form.submit()"
+                                value="@dateTime"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
                                 placeholder="Selecione uma data">
                         </div>
 
                         <label for="table-search" class="sr-only">Buscar</label>
-                        <div class="relative">
+                        <div class="relative max-w-sm">
                             <div
-                                class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                                <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                                <svg class="text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                     fill="none" viewBox="0 0 20 20">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                         stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                                 </svg>
                             </div>
                             <input type="text" id="table-search-users"
-                                class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
                                 placeholder="Buscar por pedido">
                         </div>
                         <div>
-                            <button>
-
+                            <button type="submit"
+                                class="flex bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                                <svg class="mt-1 mr-2 fill-white" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512">
+                                    <path
+                                        d="M3.9 54.9C10.5 40.9 24.5 32 40 32l432 0c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9 320 448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6l0-79.1L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" />
+                                </svg>
+                                Buscar
                             </button>
                         </div>
                 </form>
@@ -279,14 +287,14 @@
         </span>
         <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
             <li>
-                <a asp-route-pageNumber="1"
+                <a asp-route-pageNumber="1" asp-route-date="@dateTime"
                     class="@(Model.PageNumber == 1 ? "disabled pointer-events-none" : "") flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700">
                     Início
                 </a>
             </li>
 
             <li>
-                <a asp-route-pageNumber="@(Model.PageNumber - 1)"
+                <a asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-date="@dateTime"
                     class="@(Model.HasPreviousPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
                     Anterior
                 </a>
@@ -295,7 +303,7 @@
             @for (int i = startPage; i <= endPage; i++)
             {
                 <li>
-                    <a asp-route-pageNumber="@i"
+                    <a asp-route-pageNumber="@i" asp-route-date="@dateTime"
                         class="@(Model.PageNumber == @i ? "disabled pointer-events-none" : "") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
                         @i
                     </a>
@@ -303,14 +311,14 @@
             }
 
             <li>
-                <a asp-route-pageNumber="@(Model.PageNumber + 1)"
+                <a asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-date="@dateTime"
                     class="@(Model.HasNextPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
                     Próxima
                 </a>
             </li>
 
             <li>
-                <a asp-route-pageNumber="@endPage"
+                <a asp-route-pageNumber="@endPage" asp-route-date="@dateTime"
                     class="@(Model.HasNextPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700">
                     Final
                 </a>

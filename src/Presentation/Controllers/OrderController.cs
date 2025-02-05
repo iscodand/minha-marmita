@@ -8,6 +8,7 @@ using Application.DTOs.Authentication;
 using Application.Contracts.Services;
 using Application.Parameters;
 using Serilog;
+using System.ComponentModel;
 
 namespace Presentation.Controllers
 {
@@ -24,14 +25,16 @@ namespace Presentation.Controllers
 
         [HttpGet]
         [Route("")]
-        public async Task<IActionResult> Orders(int pageNumber = 1)
+        public async Task<IActionResult> Orders([FromQuery] string date, [FromQuery] string search, int pageNumber = 1)
         {
+            DateTime initialDate = DateTime.TryParse(date, out var parsedDate) ? parsedDate : DateTime.Today;
+
             RequestParameter parameters = new()
             {
                 PageNumber = pageNumber,
-                PageSize = 10,
-                InitialDate = DateTime.Now,
-                FinalDate = DateTime.Now
+                PageSize = 1,
+                InitialDate = initialDate,
+                FinalDate = initialDate
             };
 
             GetAuthenticatedUserDto authenticatedUser = SessionService.RetrieveUserSession();
@@ -68,38 +71,6 @@ namespace Presentation.Controllers
             };
 
             return View(mappedOrder);
-        }
-
-        [HttpGet]
-        [Route("buscar/")]
-        public async Task<IActionResult> FilteringOrders(DateTime? createdAt)
-        {
-            GetAuthenticatedUserDto authenticatedUser = SessionService.RetrieveUserSession();
-
-            // Filter by date has been applied on OrderService
-            Response<IEnumerable<GetOrderDto>> orders = await _orderService.GetOrdersByDateAsync(authenticatedUser.CompanyId, createdAt);
-
-            List<GetOrderViewModel> getOrderViewModelCollection = new();
-            foreach (GetOrderDto order in orders.Data)
-            {
-                GetOrderViewModel getOrderViewModel = new()
-                {
-                    Id = order.Id,
-                    Description = order.Description,
-                    Price = order.Price,
-                    IsPaid = order.IsPaid,
-                    PaidAt = order.PaidAt,
-                    PaymentType = order.PaymentType,
-                    Meal = order.Meal,
-                    Customer = order.Customer,
-                    CreatedBy = order.CreatedBy,
-                    CreatedAt = order.CreatedAt
-                };
-
-                getOrderViewModelCollection.Add(getOrderViewModel);
-            }
-
-            return PartialView("_OrdersTable", getOrderViewModelCollection);
         }
 
         [HttpGet]

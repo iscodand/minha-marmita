@@ -17,6 +17,7 @@ namespace Domain.Entities
         public ICollection<Order> Orders { get; set; }
         public ICollection<Customer> Customers { get; set; }
         public ICollection<Meal> Meals { get; set; }
+        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
         public User()
         {
