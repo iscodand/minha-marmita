@@ -7,6 +7,9 @@
     Layout = "_Layout";
 }
 
+<script src="~/js/customers/createCustomer.js"></script>
+<script src="~/js/meals/createMeal.js"></script>
+
 <section>
     <div class="mb-8 flex">
         <a asp-controller="Order" asp-action="Orders"
@@ -299,7 +302,6 @@
     </div>
 
     <div id="mealFormModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-
         <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl">
             <div class="flex justify-between items-center border-b pb-2">
                 <h2 class="text-xl font-semibold">Cadastrar novo Sabor</h2>
@@ -359,51 +361,7 @@
             </div>
         </div>
     </div>
-
 </section>
-
-<script>
-    document.getElementById("customerForm").addEventListener("submit", async function (event) {
-        event.preventDefault();
-        const url = "/clientes";
-
-        const customerName = document.getElementById("customerName").value;
-        const customerPhoneNumber = document.getElementById("customerPhoneNumber").value;
-        const customerFormError = document.getElementById("customerFormErrorMessage");
-
-        const requestBody = {
-            name: customerName,
-            phone: customerPhoneNumber
-        };
-
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(requestBody)
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                customerFormError.innerHTML = errorData.errors;
-                document.getElementById("customerFormError").classList.remove("hidden");
-                throw new Error(`Erro: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            document.getElementById("customerFormModal").classList.add("hidden");
-
-            let newCustomerOption = new Option(`${data.data.id} - ${data.data.name}`, data.data.id, true, true);
-            $('#customer-dynamic-select').append(newCustomerOption).trigger('change');
-
-        } catch (error) {
-            console.error("Erro na requisição:", error);
-        }
-    });
-</script>
 
 <script>
     document.getElementById("openModal").addEventListener("click", function () {

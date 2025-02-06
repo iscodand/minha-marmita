@@ -66,7 +66,7 @@ namespace Presentation.Controllers
                 request.UserId = authenticatedUser.Id;
                 request.CompanyId = authenticatedUser.CompanyId;
 
-                Response<CreateMealDto> result = await _mealService.CreateMealAsync(request);
+                var result = await _mealService.CreateMealAsync(request);
 
                 ViewData["Message"] = result.Message;
 
@@ -80,6 +80,24 @@ namespace Presentation.Controllers
             }
 
             return RedirectToAction(nameof(Meals));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAsync([FromBody] CreateMealDto request)
+        {
+            var user = await AuthenticatedUser.GetAuthenticatedUserAsync();
+
+            request.UserId = user.Id;
+            request.CompanyId = user.CompanyId;
+
+            var result = await _mealService.CreateMealAsync(request);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
         }
 
         [HttpGet]
