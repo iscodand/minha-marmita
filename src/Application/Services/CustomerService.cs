@@ -17,11 +17,12 @@ namespace Application.Services
             _customerRepository = customerRepository;
         }
 
-        public async Task<Response<CreateCustomerDto>> CreateCustomerAsync(CreateCustomerDto createCustomerDto)
+        public async Task<Response<GetCustomerDto>> CreateCustomerAsync(CreateCustomerDto createCustomerDto)
         {
-            if (await _customerRepository.CustomerExistsByCompanyAsync(createCustomerDto.Name, createCustomerDto.CompanyId))
+            bool customerAlreadyRegistered = await _customerRepository.CustomerExistsByCompanyAsync(createCustomerDto.Name, createCustomerDto.CompanyId);
+            if (customerAlreadyRegistered)
             {
-                return Response<CreateCustomerDto>.Failure(
+                return Response<GetCustomerDto>.Failure(
                     errors: new List<string>
                     {
                         "Um cliente com esse nome já foi cadastrado. Verifique e tente novamente"
@@ -36,10 +37,12 @@ namespace Application.Services
                 createCustomerDto.UserId
             );
 
-            await _customerRepository.CreateAsync(customer);
+            customer = await _customerRepository.CreateAsync(customer);
 
-            return Response<CreateCustomerDto>.Success(
-                data: createCustomerDto,
+            GetCustomerDto mappedCustomer = GetCustomerDto.Map(customer);
+
+            return Response<GetCustomerDto>.Success(
+                data: mappedCustomer,
                 message: "Cliente cadastrado com sucesso."
             );
         }

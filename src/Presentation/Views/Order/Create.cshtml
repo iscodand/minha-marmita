@@ -7,6 +7,9 @@
     Layout = "_Layout";
 }
 
+<script src="~/js/customers/createCustomer.js"></script>
+<script src="~/js/meals/createMeal.js"></script>
+
 <section>
     <div class="mb-8 flex">
         <a asp-controller="Order" asp-action="Orders"
@@ -34,10 +37,17 @@
                     </label>
                 </div>
 
-                <div class="md:w-2/3">
-                    <select asp-for="CustomerId" id="customer-dynamic-select" style="width=100%;"
-                            class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                <div class="md:w-2/3 ml-16">
+                    <select asp-for="CustomerId" id="customer-dynamic-select" required
+                            class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5">
                     </select>
+                </div>
+
+                <div class="md:w-3/3 ml-10">
+                    <button type="button" id="openModal"
+                            class="h-10 block shadow bg-green-700 hover:bg-green-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 rounded">
+                        + Adicionar novo
+                    </button>
                 </div>
             </div>
 
@@ -49,10 +59,17 @@
                     </label>
                 </div>
 
-                <div class="md:w-2/3">
-                    <select asp-for="MealId" id="dynamic-select" style="width=100%;"
+                <div class="md:w-2/3 ml-16">
+                    <select asp-for="MealId" id="dynamic-select" style="width=100%;" required
                             class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                     </select>
+                </div>
+
+                <div class="md:w-3/3 ml-10">
+                    <button type="button" id="openMealModal"
+                            class="h-10 shadow bg-green-700 hover:bg-green-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 rounded">
+                        + Adicionar novo
+                    </button>
                 </div>
             </div>
 
@@ -82,7 +99,7 @@
                     rounded-s-md">
                             R$
                         </span>
-                        <input asp-for="Price" type="text" placeholder="00,00" id="price" value="" class="rounded-none rounded-e-lg bg-gray-50 border
+                        <input asp-for="Price" type="text" required placeholder="00,00" id="price" value="" class="rounded-none rounded-e-lg bg-gray-50 border
                         border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5">
                     </div>
                 </div>
@@ -125,10 +142,10 @@
                 inputTooShort: function () {
                     return "Insira 1 ou mais caracteres...";
                 },
-                noResults: function() {
+                noResults: function () {
                     return "Não encontrado. Tente novamente."
                 },
-                searching: function() {
+                searching: function () {
                     return "Buscando...";
                 }
             },
@@ -166,10 +183,10 @@
                 inputTooShort: function () {
                     return "Insira 1 ou mais caracteres...";
                 },
-                noResults: function() {
+                noResults: function () {
                     return "Não encontrado. Tente novamente."
                 },
-                searching: function() {
+                searching: function () {
                     return "Buscando...";
                 }
             },
@@ -217,3 +234,159 @@
             height: 2.5rem;
         }
 </style>
+
+
+@* MODALS *@
+
+<section>
+    <div id="customerFormModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h2 class="text-xl font-semibold">Cadastrar novo Cliente</h2>
+                <button id="closeModal" class="text-gray-500 hover:text-gray-700">&times;</button>
+            </div>
+
+            <div class="mt-4">
+                <form id="customerForm" class="flex flex-col gap-3">
+                    <div class="">
+                        <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-textfield">
+                            Nome Completo
+                        </label>
+                    </div>
+                    <div class="">
+                        <div class="flex">
+                            <input id="customerName" placeholder="Insira o nome completo"
+                                   class="rounded bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5">
+                        </div>
+                    </div>
+
+                    <div class="">
+                        <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-textfield">
+                            Telefone
+                        </label>
+                    </div>
+                    <div class="">
+                        <div class="flex">
+                            <input id="customerPhoneNumber" placeholder="Opcional"
+                                   class="rounded bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5">
+                        </div>
+                    </div>
+
+                    <div id="customerFormError" class="hidden flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50" role="alert">
+                        <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                             fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                        </svg>
+                        <span id="customerFormErrorMessage" class="font-medium">
+                        </span>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between mt-4 text-right">
+                            <button id="closeModalBtn"
+                                    class="shadow bg-red-700 hover:bg-red-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                                    type="button">
+                                Cancelar
+                            </button>
+
+                            <button class="shadow bg-green-700 hover:bg-green-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                                    type="submit">
+                                Salvar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="mealFormModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h2 class="text-xl font-semibold">Cadastrar novo Sabor</h2>
+                <button id="closeMealModal" class="text-gray-500 hover:text-gray-700">&times;</button>
+            </div>
+
+            <div class="mt-4">
+                <form id="mealForm" class="flex flex-col gap-3">
+                    <div class="">
+                        <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-textfield">
+                            Nome do Sabor
+                        </label>
+                    </div>
+                    <div class="">
+                        <div class="flex">
+                            <input id="mealName" placeholder="Insira o sabor"
+                                   class="rounded bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5">
+                        </div>
+                    </div>
+
+                    <div class="">
+                        <label class="block text-gray-600 font-bold md:text-left mb-3 md:mb-0 pr-4" for="my-textfield">
+                            Acompanhamentos
+                        </label>
+                    </div>
+                    <div class="">
+                        <div class="flex">
+                            <textarea id="mealAccompaniments" placeholder="Adicione os acompanhamentos do sabor (opcional)" rows="5"
+                                      class="rounded bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="mealFormError" class="hidden flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50" role="alert">
+                        <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                             fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                        </svg>
+                        <span id="mealFormErrorMessage" class="font-medium">
+                        </span>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between mt-4 text-right">
+                            <button id="closeMealModalBtn"
+                                    class="shadow bg-red-700 hover:bg-red-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                                    type="button">
+                                Cancelar
+                            </button>
+
+                            <button class="shadow bg-green-700 hover:bg-green-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                                    type="submit">
+                                Salvar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.getElementById("openModal").addEventListener("click", function () {
+        document.getElementById("customerFormModal").classList.remove("hidden");
+    });
+
+    document.getElementById("closeModal").addEventListener("click", function () {
+        document.getElementById("customerFormModal").classList.add("hidden");
+    });
+
+    document.getElementById("closeModalBtn").addEventListener("click", function () {
+        document.getElementById("customerFormModal").classList.add("hidden");
+    });
+</script>
+
+<script>
+    document.getElementById("openMealModal").addEventListener("click", function () {
+        document.getElementById("mealFormModal").classList.remove("hidden");
+    });
+
+    document.getElementById("closeMealModal").addEventListener("click", function () {
+        document.getElementById("mealFormModal").classList.add("hidden");
+    });
+
+    document.getElementById("closeMealModalBtn").addEventListener("click", function () {
+        document.getElementById("mealFormModal").classList.add("hidden");
+    });
+</script>
