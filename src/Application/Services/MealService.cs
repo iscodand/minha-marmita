@@ -129,16 +129,17 @@ namespace Application.Services
             };
         }
 
-        public async Task<Response<CreateMealDto>> CreateMealAsync(CreateMealDto createMealDto)
+        public async Task<Response<GetMealDto>> CreateMealAsync(CreateMealDto createMealDto)
         {
             bool mealExists = await _mealRepository.MealExistsByDescriptionAsync(createMealDto.Description, createMealDto.CompanyId);
             if (mealExists)
             {
-                return new Response<CreateMealDto>()
-                {
-                    Message = "Esse sabor já está cadastrado",
-                    Succeeded = false
-                };
+                return Response<GetMealDto>.Failure(
+                    errors: new List<string>()
+                    {
+                        "Esse sabor já está cadastrado"
+                    }
+                );
             }
 
             Meal meal = Meal.Create(
@@ -148,13 +149,14 @@ namespace Application.Services
                 createMealDto.UserId
             );
 
-            await _mealRepository.CreateAsync(meal);
+            meal = await _mealRepository.CreateAsync(meal);
 
-            return new Response<CreateMealDto>()
-            {
-                Message = "Sabor salvo com sucesso.",
-                Succeeded = true
-            };
+            var mappedMeal = GetMealDto.Map(meal);
+
+            return Response<GetMealDto>.Success(
+                message: "Sabor cadastrado com sucesso",
+                data: mappedMeal
+            );
         }
 
         public async Task<Response<IEnumerable<GetMealDto>>> GetMealsByCompanyAsync(int companyId)
