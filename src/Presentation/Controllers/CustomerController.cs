@@ -73,7 +73,7 @@ namespace Presentation.Controllers
                     CompanyId = authenticatedUser.CompanyId
                 };
 
-                Response<CreateCustomerDto> response = await _customerService.CreateCustomerAsync(createCustomerDto);
+                Response<GetCustomerDto> response = await _customerService.CreateCustomerAsync(createCustomerDto);
                 ViewData["Message"] = response.Message;
 
                 if (response.Succeeded)
@@ -84,6 +84,24 @@ namespace Presentation.Controllers
             }
 
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAsync([FromBody] CreateCustomerDto request)
+        {
+            var authenticatedUser = await AuthenticatedUser.GetAuthenticatedUserAsync();
+
+            request.CompanyId = authenticatedUser.CompanyId;
+            request.UserId = authenticatedUser.Id;
+
+            var result = await _customerService.CreateCustomerAsync(request);
+
+            if (result.Succeeded == false)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
         }
 
         [HttpGet]

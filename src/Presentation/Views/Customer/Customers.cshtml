@@ -17,7 +17,7 @@
             <div class="flex justify-between items-center">
                 <div>
                     <a asp-controller="Customer" asp-action="Create"
-                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                       class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
                         + Novo Cliente
                     </a>
                 </div>
@@ -25,17 +25,16 @@
                 <div>
                     <label for="table-search" class="sr-only">Buscar</label>
                     <div class="relative">
-                        <div
-                            class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                        <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
                             <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                fill="none" viewBox="0 0 20 20">
+                                 fill="none" viewBox="0 0 20 20">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                      stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                             </svg>
                         </div>
                         <input type="text" id="table-search-users"
-                            class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Buscar por cliente">
+                               class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Buscar por cliente">
                     </div>
                 </div>
             </div>
@@ -81,19 +80,18 @@
                                     <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                                         @customer.Name
                                     </th>
-                                    @if (customer.Phone is not null)
+                                    @if (string.IsNullOrEmpty(customer.Phone))
                                     {
                                         <td class="px-6 py-4">
-                                            @customer.Phone
+                                            <span class="bg-red-100 text-red-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded">
+                                                Não informado
+                                            </span>
                                         </td>
                                     }
                                     else
                                     {
                                         <td class="px-6 py-4">
-                                            <span
-                                                class="bg-red-100 text-red-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded">
-                                            Não informado
-                                            </span>
+                                            @customer.Phone
                                         </td>
                                     }
                                     <td class="px-6 py-4">
@@ -101,7 +99,7 @@
                                     </td>
                                     <td scope="row" class="px-6 py-4">
                                         <a asp-controller="Customer" asp-action="Update" asp-route-customerId="@customer.Id"
-                                            class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+                                           class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
                                             Detalhes
                                         </a>
                                     </td>
@@ -121,21 +119,21 @@
         }
 
         <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
-            aria-label="Table navigation">
+             aria-label="Table navigation">
             <span class="text-sm font-normal text-gray-500  mb-4 md:mb-0 block w-full md:inline md:w-auto">
                 Total de clientes encontrados: <b>@Model.TotalItems</b>
             </span>
             <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
                 <li>
                     <a asp-route-pageNumber="1"
-                        class="@(Model.PageNumber == 1 ? "disabled pointer-events-none" : "") flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700">
+                       class="@(Model.PageNumber == 1 ? "disabled pointer-events-none" : "") flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700">
                         Início
                     </a>
                 </li>
 
                 <li>
                     <a asp-route-pageNumber="@(Model.PageNumber - 1)"
-                        class="@(Model.HasPreviousPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                       class="@(Model.HasPreviousPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
                         Anterior
                     </a>
                 </li>
@@ -144,7 +142,7 @@
                 {
                     <li>
                         <a asp-route-pageNumber="@i"
-                            class="@(Model.PageNumber == @i ? "disabled pointer-events-none" : "") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                           class="@(Model.PageNumber == @i ? "disabled pointer-events-none" : "") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
                             @i
                         </a>
                     </li>
@@ -152,14 +150,14 @@
 
                 <li>
                     <a asp-route-pageNumber="@(Model.PageNumber + 1)"
-                        class="@(Model.HasNextPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
+                       class="@(Model.HasNextPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
                         Próxima
                     </a>
                 </li>
 
                 <li>
                     <a asp-route-pageNumber="@endPage"
-                        class="@(Model.HasNextPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700">
+                       class="@(Model.HasNextPage ? "" : "disabled pointer-events-none") flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700">
                         Final
                     </a>
                 </li>
