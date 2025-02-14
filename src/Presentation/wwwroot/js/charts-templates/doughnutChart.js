@@ -7,12 +7,7 @@ const generateDoughnutChart = (cssClass, data, labels) => {
             datasets: [{
                 label: 'Quantidade',
                 data: data,
-                borderWidth: 1,
-                backgroundColor: [
-                    '#6dae3f',
-                    '#AE3838',
-                    '#cfcfcf'
-                ],
+                borderWidth: 1
             }],
         },
     });

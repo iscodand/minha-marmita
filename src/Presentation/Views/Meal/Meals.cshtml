@@ -82,7 +82,7 @@
                                     <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                                         @meal.Description
                                     </th>
-                                    @if (meal.Accompaniments is not null)
+                                    @if (!string.IsNullOrEmpty(meal.Accompaniments))
                                     {
                                         <td class="px-6 py-4">
                                             @meal.Accompaniments

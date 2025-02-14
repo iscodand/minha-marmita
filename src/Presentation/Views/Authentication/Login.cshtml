@@ -1,47 +1,52 @@
 @model Presentation.ViewModels.Authentication.LoginUserViewModel;
 
 @{
-    ViewData["Title"] = "Login";
-    Layout = "_LoginLayout";
+	ViewData["Title"] = "Login";
+	Layout = "_LoginLayout";
 }
 
 <section class="bg-gray-50">
-    <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900">
-            @* <img class="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo"> *@
-            Minha Marmita
-        </a>
-        <div class="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
-            <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-                <h1 class="text-center text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                    Login
-                </h1>
-                <form asp-controller="Authentication" asp-action="Login" asp-antiforgery="true" class="space-y-4 md:space-y-6">
-                    <div>
-                        <label for="username" class="block mb-2 text-sm font-medium text-gray-900">Nome de Usuário</label>
-                        <input type="text" name="username" id="email" asp-name="Username"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
-                            placeholder="seu usuário" required>
-                    </div>
-                    <div>
-                        <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Senha</label>
-                        <input type="password" name="password" id="password" placeholder="••••••••"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" >
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <a asp-controller="Authentication" asp-action="ForgotPassword" class="text-sm font-medium text-primary-600">Esqueceu sua senha?</a>
-                    </div>
+	<div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+		<div class="flex gap-4">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="h-8 w-8 fill-blue-600">
+				<path d="M176 32c44.2 0 80 35.8 80 80l0 16c0 8.8-7.2 16-16 16c-44.2 0-80-35.8-80-80l0-16c0-8.8 7.2-16 16-16zM56 64l48 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-48 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zM24 136l112 0c13.3 0 24 10.7 24 24s-10.7 24-24 24L24 184c-13.3 0-24-10.7-24-24s10.7-24 24-24zm8 96c0-13.3 10.7-24 24-24l48 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-48 0c-13.3 0-24-10.7-24-24zM272 48c0-8.8 7.2-16 16-16c44.2 0 80 35.8 80 80l0 16c0 8.8-7.2 16-16 16c-44.2 0-80-35.8-80-80l0-16zM400 32c44.2 0 80 35.8 80 80l0 16c0 8.8-7.2 16-16 16c-44.2 0-80-35.8-80-80l0-16c0-8.8 7.2-16 16-16zm80 160l0 16c0 44.2-35.8 80-80 80c-8.8 0-16-7.2-16-16l0-16c0-44.2 35.8-80 80-80c8.8 0 16 7.2 16 16zM352 176c8.8 0 16 7.2 16 16l0 16c0 44.2-35.8 80-80 80c-8.8 0-16-7.2-16-16l0-16c0-44.2 35.8-80 80-80zm-96 16l0 16c0 44.2-35.8 80-80 80c-8.8 0-16-7.2-16-16l0-16c0-44.2 35.8-80 80-80c8.8 0 16 7.2 16 16zM3.5 347.6C1.6 332.9 13 320 27.8 320l456.4 0c14.8 0 26.2 12.9 24.4 27.6C502.3 397.8 464.2 437 416 446l0 2c0 17.7-14.3 32-32 32l-256 0c-17.7 0-32-14.3-32-32l0-2c-48.2-9-86.3-48.2-92.5-98.4z" />
+			</svg>
+			<span class="flex items-center mb-6 text-2xl font-semibold text-blue-600">
+				@* <img class="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo"> *@
+				Minha Marmita
+			</span>
+		</div>
+		<div class="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
+			<div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+				<h1 class="text-center text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
+					Login
+				</h1>
+				<form asp-controller="Authentication" asp-action="Login" asp-antiforgery="true" class="space-y-4 md:space-y-6">
+					<div>
+						<label for="username" class="block mb-2 text-sm font-medium text-gray-900">Nome de Usuário</label>
+						<input type="text" name="username" id="email" asp-name="Username"
+							   class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+							   placeholder="seu usuário" required>
+					</div>
+					<div>
+						<label for="password" class="block mb-2 text-sm font-medium text-gray-900">Senha</label>
+						<input type="password" name="password" id="password" placeholder="••••••••"
+							   class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5">
+					</div>
+					<div class="flex items-center justify-between">
+						<a asp-controller="Authentication" asp-action="ForgotPassword" class="text-sm font-medium text-primary-600">Esqueceu sua senha?</a>
+					</div>
 
-                    <div>
-                        <partial name="../Shared/Partials/_Messages.cshtml" />
-                    </div>
+					<div>
+						<partial name="../Shared/Partials/_Messages.cshtml" />
+					</div>
 
-                    <button type="submit"
-                        class="w-full text-white bg-green-600 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-                        Login
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
+					<button type="submit"
+							class="w-full text-white bg-green-600 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+						Login
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
 </section>
