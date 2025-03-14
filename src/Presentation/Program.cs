@@ -13,15 +13,9 @@ DotEnv.Load();
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<RequestLocalizationOptions>(options =>
-{
-    options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
-    options.SupportedCultures = new List<CultureInfo>
-    {
-        new("pt-BR"),
-        new("pt-BR")
-    };
-});
+var cultureInfo = new CultureInfo("pt-BR");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 Console.WriteLine(builder.Configuration.GetConnectionString("DefaultConnection"));
 

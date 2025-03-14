@@ -265,7 +265,16 @@
             </div>
 
             <div class="chart-container flex justify-center mt-3">
-                <canvas id="meals-chart" style="max-width: 400px; max-height: 430px;"></canvas>
+                @if (data.Orders.Any())
+                {
+                    <canvas id="meals-chart" style="max-width: 400px; max-height: 430px;"></canvas>
+                }
+                else
+                {
+                    <div class="p-32">
+                        <p>Nenhum pedido encontrado.</p>
+                    </div>
+                }
             </div>
         </div>
 
@@ -280,7 +289,16 @@
             </div>
 
             <div class="chart-container flex justify-center mt-3">
-                <canvas id="customers-chart" style="max-width: 400px; max-height: 430px;"></canvas>
+                @if (data.Orders.Any())
+                {
+                    <canvas id="customers-chart" style="max-width: 400px; max-height: 430px;"></canvas>
+                }
+                else
+                {
+                    <div class="p-32">
+                        <p>Nenhum pedido encontrado.</p>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -288,14 +306,12 @@
 </section>
 
 <script>
-    console.log(@Json.Serialize(data.Meals));
     const mealsJsonData = @Json.Serialize(data.Meals);
     const mealsLabels = mealsJsonData.map(item => item.description);
     const mealsData = mealsJsonData.map(item => item.ordersCount);
     generateDoughnutChart("meals-chart", mealsData, mealsLabels);
 
     const customersJsonData = @Json.Serialize(data.Customers)
-        console.log(customersJsonData);
     const customersLabels = customersJsonData.map(item => item.name);
     const customersData = customersJsonData.map(item => item.ordersCount);
     generateDoughnutChart("customers-chart", customersData, customersLabels);

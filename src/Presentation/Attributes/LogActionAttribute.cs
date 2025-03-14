@@ -1,4 +1,5 @@
 using Application.Contracts.Services;
+using Application.DTOs.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Text.Json;
@@ -23,7 +24,7 @@ namespace Presentation.Attributes
             var request = context.ActionArguments;
             var executedContext = await next();
             object response = null;
-            // var userId = _authenticatedUserService?.Id.ToString() ?? "Anonymous";
+            GetAuthenticatedUserDto user = await _authenticatedUserService.GetAuthenticatedUserAsync();
 
             if (executedContext.Result is ObjectResult objectResult)
             {
@@ -36,7 +37,7 @@ namespace Presentation.Attributes
                 Message = "Executando ação do controlador.",
                 Request = JsonSerializer.Serialize(request),
                 Response = JsonSerializer.Serialize(response),
-                UserId = ""
+                UserId = user.Id
             }
             );
         }
